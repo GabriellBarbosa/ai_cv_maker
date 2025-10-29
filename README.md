@@ -103,7 +103,7 @@ Start with Docker Compose:
 
 ```bash
 cd infra
-docker-compose up
+docker compose up
 ```
 
 ## 📚 Documentation
