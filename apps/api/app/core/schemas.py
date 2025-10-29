@@ -77,3 +77,16 @@ class ResumeResponse(BaseModel):
     experiences: List[Experience] = Field(..., min_length=1, description="At least one experience is required")
     education: List[Education] = Field(default_factory=list)
     languages: List[Language] = Field(default_factory=list)
+
+
+# Cover Letter Response Schema
+class CoverLetterResponse(BaseModel):
+    greeting: str = Field(..., min_length=1, description="Greeting is required")
+    body: str = Field(..., min_length=1, description="Body is required")
+    signature: str = Field(..., min_length=1, description="Signature is required")
+
+
+# Combined Generate Response Schema
+class GenerateResponse(BaseModel):
+    resume: ResumeResponse
+    cover_letter: CoverLetterResponse
