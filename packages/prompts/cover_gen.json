@@ -1,0 +1,6 @@
+{
+  "name": "cover_gen",
+  "description": "Generates the cover letter text",
+  "prompt": "Generate a professional cover letter (150-220 words) that references 2-3 key job requirements from the job description.",
+  "version": "0.1.0"
+}

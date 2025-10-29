@@ -1,0 +1,6 @@
+{
+  "name": "extract",
+  "description": "Extracts candidate and job data into structured JSON",
+  "prompt": "Extract structured data from the following candidate and job description. Return a JSON object with relevant information.",
+  "version": "0.1.0"
+}
