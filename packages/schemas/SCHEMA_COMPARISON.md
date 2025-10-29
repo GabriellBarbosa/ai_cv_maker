@@ -94,6 +94,8 @@ class Experience(BaseModel):
 - ✅ Same minimum array length (bullets must have at least 1 item)
 - ✅ Same default value for tech_stack (empty array)
 - ✅ Same validation for non-empty strings in arrays
+  - TypeScript: `z.array(z.string().min(1))` validates each string is non-empty
+  - Python: Custom validator checks each bullet string is non-empty
 
 ---
 
