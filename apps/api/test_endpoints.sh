@@ -1,5 +1,7 @@
 #!/bin/bash
 # Manual test script for the API endpoints
+# Usage: ./test_endpoints.sh
+# Note: Make sure the script is executable (chmod +x test_endpoints.sh)
 
 BASE_URL="http://localhost:8000"
 

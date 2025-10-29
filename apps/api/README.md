@@ -94,7 +94,8 @@ Run the test script:
 # Start the API server first
 python -m uvicorn app.main:app --reload
 
-# In another terminal, run the test script
+# In another terminal, make the test script executable and run it
+chmod +x test_endpoints.sh
 ./test_endpoints.sh
 ```
 
