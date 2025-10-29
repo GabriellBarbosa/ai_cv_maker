@@ -19,7 +19,7 @@ An AI-powered CV and cover letter generator using Next.js 15, FastAPI, and OpenA
 
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
-- Python >= 3.11
+- Python >= 3.10
 - Poetry
 
 ### Setup
