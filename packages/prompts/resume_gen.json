@@ -1,0 +1,6 @@
+{
+  "name": "resume_gen",
+  "description": "Builds the final structured resume JSON",
+  "prompt": "Generate a structured resume based on the provided information. Include experiences, education, skills, and languages.",
+  "version": "0.1.0"
+}
