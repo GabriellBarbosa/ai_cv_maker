@@ -36,10 +36,16 @@ from app.core.schemas import (
 logger = logging.getLogger(__name__)
 
 # Initialize OpenAI client with 30s timeout
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    timeout=30.0,
-)
+# The API key can be set via OPENAI_API_KEY environment variable
+def _get_openai_client() -> OpenAI:
+    """Get or create OpenAI client instance"""
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise LLMClientError(
+            "OPENAI_API_KEY environment variable is not set. "
+            "Please configure your OpenAI API key to use this service."
+        )
+    return OpenAI(api_key=api_key, timeout=30.0)
 
 
 class LLMClientError(Exception):
@@ -111,6 +117,7 @@ def extract_payload(
     logger.info("Extracting payload from candidate and job text")
     
     try:
+        client = _get_openai_client()
         system_prompt = """You are an expert HR assistant that extracts structured information from text.
 Extract the following information from the candidate and job descriptions:
 - Candidate's name (if mentioned)
@@ -196,6 +203,7 @@ def generate_resume_json(
     logger.info("Generating resume JSON")
     
     try:
+        client = _get_openai_client()
         tone_instructions = {
             "profissional": "Use a formal, professional tone with industry-standard terminology.",
             "neutro": "Use a neutral, straightforward tone without embellishments.",
@@ -329,6 +337,7 @@ def generate_cover_text(
     logger.info("Generating cover letter text")
     
     try:
+        client = _get_openai_client()
         tone_instructions = {
             "profissional": "Use a formal, professional tone appropriate for corporate settings.",
             "neutro": "Use a neutral, straightforward tone without excessive formality.",
