@@ -35,17 +35,29 @@ from app.core.schemas import (
 
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client with 30s timeout
-# The API key can be set via OPENAI_API_KEY environment variable
+# Module-level client instance (singleton pattern)
+_client: Optional[OpenAI] = None
+
+
 def _get_openai_client() -> OpenAI:
-    """Get or create OpenAI client instance"""
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise LLMClientError(
-            "OPENAI_API_KEY environment variable is not set. "
-            "Please configure your OpenAI API key to use this service."
-        )
-    return OpenAI(api_key=api_key, timeout=30.0)
+    """
+    Get or create OpenAI client instance (singleton pattern).
+    
+    This function creates a single client instance that is reused across all calls,
+    avoiding the overhead of creating new connections.
+    """
+    global _client
+    
+    if _client is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise LLMClientError(
+                "OPENAI_API_KEY environment variable is not set. "
+                "Please configure your OpenAI API key to use this service."
+            )
+        _client = OpenAI(api_key=api_key, timeout=30.0)
+    
+    return _client
 
 
 class LLMClientError(Exception):
