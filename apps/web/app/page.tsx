@@ -1,36 +1,4 @@
-import Link from "next/link";
-import { ArrowRight, FileText, Globe2, Sparkles } from "lucide-react";
-
 import { GenerateForm } from "@/components/generate-form";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const features = [
-  {
-    title: "Tailored to Every Role",
-    description:
-      "Paste the job description and our AI reshapes your experience to match the role precisely.",
-    icon: FileText,
-  },
-  {
-    title: "Cover Letters in Seconds",
-    description:
-      "Generate companion cover letters with the tone and language that feel right for each opportunity.",
-    icon: Sparkles,
-  },
-  {
-    title: "Ready for Global Applications",
-    description:
-      "Switch languages instantly and deliver polished resumes in Portuguese or English.",
-    icon: Globe2,
-  },
-];
-
-const stats = [
-  { value: "5× faster", hint: "than writing from scratch" },
-  { value: "92%", hint: "users felt more confident applying" },
-  { value: "60s", hint: "to your first polished draft" },
-];
 
 export default function Home() {
   return (
