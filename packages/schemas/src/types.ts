@@ -55,3 +55,20 @@ export const ResumeResponseSchema = z.object({
 });
 
 export type ResumeResponse = z.infer<typeof ResumeResponseSchema>;
+
+// Cover Letter Response Schema
+export const CoverLetterResponseSchema = z.object({
+  greeting: z.string().min(1, 'Greeting is required'),
+  body: z.string().min(1, 'Body is required'),
+  signature: z.string().min(1, 'Signature is required'),
+});
+
+export type CoverLetterResponse = z.infer<typeof CoverLetterResponseSchema>;
+
+// Combined Generate Response Schema
+export const GenerateResponseSchema = z.object({
+  resume: ResumeResponseSchema,
+  cover_letter: CoverLetterResponseSchema,
+});
+
+export type GenerateResponse = z.infer<typeof GenerateResponseSchema>;
