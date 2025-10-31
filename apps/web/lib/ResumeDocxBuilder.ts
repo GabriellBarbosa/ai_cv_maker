@@ -343,7 +343,7 @@ export class ResumeDocxBuilder {
         },
       }),
       new Paragraph({
-        text: Array.from(allSkills).join(" • "),
+        text: Array.from(allSkills).join(", "),
         spacing: {
           after: 100,
         },

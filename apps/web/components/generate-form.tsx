@@ -101,7 +101,12 @@ export function GenerateForm() {
       const doc = builder.build();
       
       const blob = await Packer.toBlob(doc);
-      const fileName = `${response.resume.name.replace(/\s+/g, "_")}_Resume.docx`;
+      // Sanitize filename by removing/replacing invalid characters
+      const sanitizedName = response.resume.name
+        .replace(/[<>:"/\\|?*]/g, "") // Remove invalid characters
+        .replace(/\s+/g, "_") // Replace spaces with underscores
+        .trim();
+      const fileName = `${sanitizedName}_Resume.docx`;
       saveAs(blob, fileName);
     } catch (err) {
       setError(
