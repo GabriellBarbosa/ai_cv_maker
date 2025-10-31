@@ -24,14 +24,15 @@ from tenacity import (
 )
 from openai import OpenAI, APIError, APITimeoutError, RateLimitError
 from pydantic import ValidationError
+from dotenv import load_dotenv
 
 from app.core.schemas import (
     ResumeResponse,
     CoverLetterResponse,
-    Experience,
-    Education,
-    Language,
 )
+
+# Load environment variables from .env file
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
