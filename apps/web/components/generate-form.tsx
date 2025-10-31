@@ -3,7 +3,10 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { GenerateRequestSchema, type GenerateRequest } from "@ai-cv-maker/schemas"
+import { 
+  GenerateRequestSchema, 
+  type GenerateResponse 
+} from "@ai-cv-maker/schemas"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -16,44 +19,14 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-type GenerateResponse = {
-  resume: {
-    name: string
-    job_title: string
-    candidate_introduction: string
-    experiences: Array<{
-      company: string
-      role: string
-      start_date: string
-      end_date: string
-      location: string
-      bullets: string[]
-      tech_stack: string[]
-    }>
-    education: Array<{
-      institution: string
-      degree: string
-      start_date: string
-      end_date: string
-    }>
-    languages: Array<{
-      name: string
-      level: string
-    }>
-  }
-  cover_letter: {
-    greeting: string
-    body: string
-    signature: string
-  }
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 export function GenerateForm() {
   const [response, setResponse] = useState<GenerateResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  type FormValues = {
+  type FormData = {
     candidate_text: string
     job_text: string
     language: "pt-BR" | "en-US"
@@ -67,8 +40,9 @@ export function GenerateForm() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(GenerateRequestSchema),
+  } = useForm<FormData>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(GenerateRequestSchema) as any,
     defaultValues: {
       candidate_text: "",
       job_text: "",
@@ -81,13 +55,13 @@ export function GenerateForm() {
   const language = watch("language")
   const tone = watch("tone")
 
-  const onSubmit = async (data: GenerateRequest) => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true)
     setError(null)
     setResponse(null)
 
     try {
-      const res = await fetch("http://localhost:8000/v1/generate", {
+      const res = await fetch(`${API_URL}/v1/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
