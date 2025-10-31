@@ -1,78 +1,135 @@
-from fastapi import APIRouter
+import logging
+from fastapi import APIRouter, HTTPException
 from app.core.schemas import (
     GenerateRequest,
     GenerateResponse,
     ResumeResponse,
     CoverLetterResponse,
-    Experience,
-    Education,
-    Language,
+)
+from app.services.llm_client import (
+    extract_payload,
+    generate_resume_json,
+    generate_cover_text,
+    LLMClientError,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-def get_stub_resume() -> ResumeResponse:
-    """Return stub resume data"""
-    return ResumeResponse(
-        name="João Silva",
-        job_title="Engenheiro de Software",
-        candidate_introduction="Profissional experiente em desenvolvimento de software com foco em arquitetura de sistemas e liderança técnica.",
-        experiences=[
-            Experience(
-                company="Tech Company",
-                role="Senior Software Engineer",
-                start_date="2020-01",
-                end_date="Atual",
-                location="São Paulo, Brasil",
-                bullets=[
-                    "Desenvolveu microsserviços escaláveis usando Python e FastAPI",
-                    "Liderou equipe de 5 desenvolvedores em projetos críticos",
-                    "Implementou CI/CD pipelines reduzindo tempo de deploy em 50%"
-                ],
-                tech_stack=["Python", "FastAPI", "Docker", "Kubernetes"]
-            )
-        ],
-        education=[
-            Education(
-                institution="Universidade de São Paulo",
-                degree="Bacharelado em Ciência da Computação",
-                start_date="2015-03",
-                end_date="2019-12"
-            )
-        ],
-        languages=[
-            Language(name="Português", level="Nativo"),
-            Language(name="Inglês", level="C1")
-        ]
-    )
-
-
-def get_stub_cover_letter() -> CoverLetterResponse:
-    """Return stub cover letter data"""
-    return CoverLetterResponse(
-        greeting="Prezado(a) Recrutador(a),",
-        body="Escrevo para expressar meu interesse na posição anunciada. Com mais de 5 anos de experiência em desenvolvimento de software, acredito que minhas habilidades técnicas e experiência em liderança de equipes se alinham perfeitamente com os requisitos da vaga. Tenho um histórico comprovado de entrega de projetos complexos e estou ansioso para contribuir com o sucesso da equipe.",
-        signature="Atenciosamente,\nJoão Silva"
-    )
 
 
 @router.post("/generate", response_model=GenerateResponse, status_code=200)
 async def generate_all(request: GenerateRequest):
     """Generate both resume and cover letter"""
-    return GenerateResponse(
-        resume=get_stub_resume(),
-        cover_letter=get_stub_cover_letter()
-    )
+    try:
+        logger.info("Generating complete CV package")
+        
+        # Step 1: Extract structured data
+        extracted_data = extract_payload(
+            candidate_text=request.candidate_text,
+            job_text=request.job_text,
+            language=request.language,
+        )
+        
+        # Step 2: Generate resume
+        resume = generate_resume_json(
+            extracted_data=extracted_data,
+            job_text=request.job_text,
+            language=request.language,
+            tone=request.tone,
+        )
+        
+        # Step 3: Generate cover letter
+        cover_letter = generate_cover_text(
+            candidate_name=resume.name,
+            job_title=resume.job_title,
+            candidate_summary=resume.candidate_introduction,
+            job_text=request.job_text,
+            language=request.language,
+            tone=request.tone,
+        )
+        
+        logger.info("Successfully generated complete CV package")
+        return GenerateResponse(resume=resume, cover_letter=cover_letter)
+        
+    except LLMClientError as e:
+        logger.error(f"LLM client error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate content: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/generate/resume", response_model=ResumeResponse, status_code=200)
 async def generate_resume(request: GenerateRequest):
     """Generate only resume"""
-    return get_stub_resume()
+    try:
+        logger.info("Generating resume only")
+        
+        # Extract structured data
+        extracted_data = extract_payload(
+            candidate_text=request.candidate_text,
+            job_text=request.job_text,
+            language=request.language,
+        )
+        
+        # Generate resume
+        resume = generate_resume_json(
+            extracted_data=extracted_data,
+            job_text=request.job_text,
+            language=request.language,
+            tone=request.tone,
+        )
+        
+        logger.info("Successfully generated resume")
+        return resume
+        
+    except LLMClientError as e:
+        logger.error(f"LLM client error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate resume: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.post("/generate/cover-letter", response_model=CoverLetterResponse, status_code=200)
-async def generate_cover_letter(request: GenerateRequest):
+async def generate_cover_letter_endpoint(request: GenerateRequest):
     """Generate only cover letter"""
-    return get_stub_cover_letter()
+    try:
+        logger.info("Generating cover letter only")
+        
+        # Extract structured data
+        extracted_data = extract_payload(
+            candidate_text=request.candidate_text,
+            job_text=request.job_text,
+            language=request.language,
+        )
+        
+        # Extract candidate info for cover letter
+        candidate_name = extracted_data.get("name", "Candidate")
+        job_title = extracted_data.get("job_title", "Position")
+        
+        # Create a summary from candidate text (first 200 chars as fallback)
+        candidate_summary = extracted_data.get(
+            "summary",
+            request.candidate_text[:200] + "..." if len(request.candidate_text) > 200 else request.candidate_text
+        )
+        
+        # Generate cover letter
+        cover_letter = generate_cover_text(
+            candidate_name=candidate_name,
+            job_title=job_title,
+            candidate_summary=candidate_summary,
+            job_text=request.job_text,
+            language=request.language,
+            tone=request.tone,
+        )
+        
+        logger.info("Successfully generated cover letter")
+        return cover_letter
+        
+    except LLMClientError as e:
+        logger.error(f"LLM client error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate cover letter: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
