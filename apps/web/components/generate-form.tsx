@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { 
-  GenerateRequestSchema, 
-  type GenerateResponse 
+import {
+  GenerateRequestSchema,
+  type GenerateResponse,
 } from "@ai-cv-maker/schemas"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -84,31 +84,31 @@ export function GenerateForm() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl p-6 space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">AI CV Maker</h1>
-        <p className="text-muted-foreground">
-          Generate a professional resume and cover letter using AI
-        </p>
-      </div>
-
+    <div className="space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Input Information</CardTitle>
-            <CardDescription>
-              Provide your candidate information and the job description
+        <Card className="border border-border/70 bg-gradient-to-b from-card/90 via-card/80 to-card/70 shadow-xl backdrop-blur">
+          <CardHeader className="space-y-3">
+            <CardTitle className="text-2xl font-semibold">
+              Generate your application kit
+            </CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              Share your story, paste the role, and let our AI draft a resume
+              and cover letter that feel unmistakably yours.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="candidate_text">Candidate Text</Label>
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <Label htmlFor="candidate_text">Candidate profile</Label>
               <Textarea
                 id="candidate_text"
-                placeholder="Enter your professional experience, skills, and education..."
-                rows={8}
+                placeholder="Summaries, achievements, bullet points, education—anything you would share with a recruiter."
+                rows={7}
                 {...register("candidate_text")}
-                className={errors.candidate_text ? "border-destructive" : ""}
+                className={`min-h-[180px] resize-y border-border/60 bg-background/40 text-sm leading-relaxed ${
+                  errors.candidate_text
+                    ? "border-destructive/70 focus-visible:ring-destructive/70"
+                    : ""
+                }`}
               />
               {errors.candidate_text && (
                 <p className="text-sm text-destructive">
@@ -117,14 +117,18 @@ export function GenerateForm() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="job_text">Job Description</Label>
+            <div className="space-y-3">
+              <Label htmlFor="job_text">Job description</Label>
               <Textarea
                 id="job_text"
-                placeholder="Paste the job description here..."
-                rows={8}
+                placeholder="Paste the JD, responsibilities, or a link summary. The more context you add, the sharper the match."
+                rows={7}
                 {...register("job_text")}
-                className={errors.job_text ? "border-destructive" : ""}
+                className={`min-h-[180px] resize-y border-border/60 bg-background/40 text-sm leading-relaxed ${
+                  errors.job_text
+                    ? "border-destructive/70 focus-visible:ring-destructive/70"
+                    : ""
+                }`}
               />
               {errors.job_text && (
                 <p className="text-sm text-destructive">
@@ -133,33 +137,46 @@ export function GenerateForm() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-3">
                 <Label htmlFor="language">Language</Label>
                 <Select
                   value={language}
-                  onValueChange={(value) => setValue("language", value as "pt-BR" | "en-US")}
+                  onValueChange={(value) =>
+                    setValue("language", value as "pt-BR" | "en-US")
+                  }
                 >
-                  <SelectTrigger id="language">
+                  <SelectTrigger
+                    id="language"
+                    className="border-border/60 bg-background/40"
+                  >
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border border-border/60 bg-card">
                     <SelectItem value="pt-BR">Portuguese (pt-BR)</SelectItem>
                     <SelectItem value="en-US">English (en-US)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label htmlFor="tone">Tone</Label>
                 <Select
                   value={tone}
-                  onValueChange={(value) => setValue("tone", value as "profissional" | "neutro" | "criativo")}
+                  onValueChange={(value) =>
+                    setValue(
+                      "tone",
+                      value as "profissional" | "neutro" | "criativo"
+                    )
+                  }
                 >
-                  <SelectTrigger id="tone">
+                  <SelectTrigger
+                    id="tone"
+                    className="border-border/60 bg-background/40"
+                  >
                     <SelectValue placeholder="Select tone" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border border-border/60 bg-card">
                     <SelectItem value="profissional">Professional</SelectItem>
                     <SelectItem value="neutro">Neutral</SelectItem>
                     <SelectItem value="criativo">Creative</SelectItem>
@@ -168,17 +185,20 @@ export function GenerateForm() {
               </div>
             </div>
 
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? "Generating..." : "Generate Resume"}
+            <Button type="submit" disabled={isLoading} className="w-full font-bold" variant={`default`}>
+              {isLoading ? "Generating..." : "Generate resume & cover letter"}
             </Button>
           </CardContent>
         </Card>
       </form>
 
       {error && (
-        <Card className="border-destructive">
+        <Card className="border border-destructive/60 bg-destructive/10">
           <CardHeader>
-            <CardTitle className="text-destructive">Error</CardTitle>
+            <CardTitle className="text-destructive">We hit a snag</CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wide text-destructive/70">
+              Check your inputs or try again in a moment
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">{error}</p>
@@ -187,15 +207,15 @@ export function GenerateForm() {
       )}
 
       {response && (
-        <Card>
+        <Card className="border border-border/70 bg-card/80 shadow-lg">
           <CardHeader>
-            <CardTitle>Generated Response</CardTitle>
+            <CardTitle>Generated response</CardTitle>
             <CardDescription>
-              Your resume and cover letter have been generated successfully
+              Download, fine-tune, or plug into your favourite template.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <pre className="bg-muted p-4 rounded-lg overflow-auto text-xs max-h-[600px]">
+            <pre className="max-h-[600px] overflow-auto rounded-xl border border-border/60 bg-background/40 p-4 text-xs leading-relaxed">
               {JSON.stringify(response, null, 2)}
             </pre>
           </CardContent>
