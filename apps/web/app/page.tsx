@@ -19,15 +19,15 @@ export default function Home() {
             </p>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
                 Personalize tone and format without leaving the flow.
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
                 Export structured JSON you can feed into any template.
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
                 Designed for clarity in dark environments and late-night prep
                 sessions.
               </li>
