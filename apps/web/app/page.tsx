@@ -35,8 +35,8 @@ const stats = [
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <main className="relative z-10 flex flex-col gap-24 pb-24 pt-20 grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-        <section id="generate" className="container mx-auto px-6">
+      <main className="container mx-auto relative z-10 flex flex-col gap-24 pb-24 pt-20 grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+        <section id="generate" className="px-6">
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               Start now
@@ -66,7 +66,7 @@ export default function Home() {
             </ul>
           </div>
         </section>
-        <section id="generate" className="container mx-auto lg:px-6">
+        <section id="generate" className="lg:px-6">
           <GenerateForm />
         </section>
       </main>
