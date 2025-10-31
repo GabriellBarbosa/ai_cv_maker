@@ -24,6 +24,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Packer } from "docx";
+import { saveAs } from "file-saver";
+import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
+import { Download } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -86,6 +90,25 @@ export function GenerateForm() {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDownloadDocx = async () => {
+    if (!response?.resume) return;
+
+    try {
+      const builder = new ResumeDocxBuilder(response.resume);
+      const doc = builder.build();
+      
+      const blob = await Packer.toBlob(doc);
+      const fileName = `${response.resume.name.replace(/\s+/g, "_")}_Resume.docx`;
+      saveAs(blob, fileName);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? `Failed to download resume: ${err.message}`
+          : "Failed to download resume"
+      );
     }
   };
 
@@ -233,7 +256,15 @@ export function GenerateForm() {
               Download, fine-tune, or plug into your favourite template.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <Button
+              onClick={handleDownloadDocx}
+              className="w-full font-bold"
+              variant="default"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download Resume (.docx)
+            </Button>
             <pre className="max-h-[600px] overflow-auto rounded-xl border border-border/60 bg-background/70 p-4 text-xs leading-relaxed">
               {JSON.stringify(response, null, 2)}
             </pre>
