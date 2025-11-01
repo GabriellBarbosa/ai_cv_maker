@@ -44,6 +44,23 @@ export const LanguageSchema = z.object({
 
 export type Language = z.infer<typeof LanguageSchema>;
 
+// Contact Information Schema
+export const ContactInformationSchema = z.object({
+  email: z.string().email('Invalid email address').optional(),
+  phone: z.string().min(1, 'Phone is required').optional(),
+  location: z.string().min(1, 'Location is required').optional(),
+});
+
+export type ContactInformation = z.infer<typeof ContactInformationSchema>;
+
+// External Link Schema
+export const ExternalLinkSchema = z.object({
+  label: z.string().min(1, 'Link label is required'),
+  url: z.string().min(1, 'URL is required'),
+});
+
+export type ExternalLink = z.infer<typeof ExternalLinkSchema>;
+
 // Resume Response Schema
 export const ResumeResponseSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -52,6 +69,8 @@ export const ResumeResponseSchema = z.object({
   experiences: z.array(ExperienceSchema).min(1, 'At least one experience is required'),
   education: z.array(EducationSchema).default([]),
   languages: z.array(LanguageSchema).default([]),
+  contact_information: ContactInformationSchema.optional(),
+  external_links: z.array(ExternalLinkSchema).default([]),
 });
 
 export type ResumeResponse = z.infer<typeof ResumeResponseSchema>;

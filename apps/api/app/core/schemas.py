@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Literal, List
+from typing import Literal, List, Optional
 import re
 
 # Generate Request Schema
@@ -69,6 +69,19 @@ class Language(BaseModel):
     )
 
 
+# Contact Information Schema
+class ContactInformation(BaseModel):
+    email: Optional[str] = Field(default=None, description="Primary email address")
+    phone: Optional[str] = Field(default=None, description="Primary phone number")
+    location: Optional[str] = Field(default=None, description="Current location or city")
+
+
+# External Link Schema
+class ExternalLink(BaseModel):
+    label: str = Field(..., min_length=1, description="Display label for the link")
+    url: str = Field(..., min_length=1, description="URL to external resource")
+
+
 # Resume Response Schema
 class ResumeResponse(BaseModel):
     name: str = Field(..., min_length=1, description="Name is required")
@@ -77,6 +90,12 @@ class ResumeResponse(BaseModel):
     experiences: List[Experience] = Field(..., min_length=1, description="At least one experience is required")
     education: List[Education] = Field(default_factory=list)
     languages: List[Language] = Field(default_factory=list)
+    contact_information: Optional[ContactInformation] = Field(
+        default=None, description="Candidate contact information"
+    )
+    external_links: List[ExternalLink] = Field(
+        default_factory=list, description="Relevant external links (e.g., portfolio, LinkedIn)"
+    )
 
 
 # Cover Letter Response Schema

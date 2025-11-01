@@ -135,10 +135,12 @@ def extract_payload(
 Extract the following information from the candidate and job descriptions:
 - Candidate's name (if mentioned)
 - Current or desired job title
+- Contact details (email, phone number, location)
 - Professional experiences (company, role, dates, location, achievements)
 - Education (institution, degree, dates)
 - Languages and proficiency levels
 - Skills and technologies
+- Relevant external links (e.g., LinkedIn, portfolio) with labels and URLs
 
 Return a valid JSON object with this structure.
 If information is not available, omit the field rather than inventing data.
@@ -233,12 +235,19 @@ Guidelines:
 - For current positions, use "Atual" for end_date
 - Include relevant tech_stack for each experience
 - Language levels: A2, B1, B2, C1, C2, or Nativo
+- Provide a contact_information object with available email, phone, and location (omit fields if unknown)
+- Include up to three external_links with descriptive labels and URLs when relevant
 
 Return a JSON object with this exact structure:
 {{
   "name": "string",
   "job_title": "string",
   "candidate_introduction": "string (2-3 sentences)",
+  "contact_information": {{
+    "email": "string or null",
+    "phone": "string or null",
+    "location": "string or null"
+  }},
   "experiences": [
     {{
       "company": "string",
@@ -262,6 +271,12 @@ Return a JSON object with this exact structure:
     {{
       "name": "string",
       "level": "A2|B1|B2|C1|C2|Nativo"
+    }}
+  ],
+  "external_links": [
+    {{
+      "label": "string",
+      "url": "string"
     }}
   ]
 }}"""
