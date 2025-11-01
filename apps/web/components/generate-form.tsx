@@ -24,6 +24,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Packer } from "docx";
+import { saveAs } from "file-saver";
+import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
+import { Download } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -89,6 +93,30 @@ export function GenerateForm() {
     }
   };
 
+  const handleDownloadDocx = async () => {
+    if (!response?.resume) return;
+
+    try {
+      const builder = new ResumeDocxBuilder(response.resume);
+      const doc = builder.build();
+      
+      const blob = await Packer.toBlob(doc);
+      // Sanitize filename by removing/replacing invalid characters
+      const sanitizedName = response.resume.name
+        .replace(/[<>:"/\\|?*]/g, "") // Remove invalid characters
+        .replace(/\s+/g, "_") // Replace spaces with underscores
+        .trim();
+      const fileName = `${sanitizedName}_Resume.docx`;
+      saveAs(blob, fileName);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? `Failed to download resume: ${err.message}`
+          : "Failed to download resume"
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -112,7 +140,7 @@ export function GenerateForm() {
                 placeholder="Your name, desired role, summaries, achievements, bullet points, education—anything you would share with a recruiter."
                 rows={7}
                 {...register("candidate_text")}
-                className={`min-h-[180px] resize-y border-border/60 bg-background/70 text-sm leading-relaxed ${
+                className={`min-h-[180px] resize-y border-2 border-gray-600 bg-background/70 text-sm leading-relaxed ${
                   errors.candidate_text
                     ? "border-destructive/70 focus-visible:ring-destructive/70"
                     : ""
@@ -134,7 +162,7 @@ export function GenerateForm() {
                 placeholder="The information about the job. The more context you add, the sharper the match."
                 rows={7}
                 {...register("job_text")}
-                className={`min-h-[180px] resize-y border-border/60 bg-background/70 text-sm leading-relaxed ${
+                className={`min-h-[180px] resize-y border-2 border-gray-600 bg-background/70 text-sm leading-relaxed ${
                   errors.job_text
                     ? "border-destructive/70 focus-visible:ring-destructive/70"
                     : ""
@@ -160,11 +188,11 @@ export function GenerateForm() {
                 >
                   <SelectTrigger
                     id="language"
-                    className="border-border/60 bg-background/70"
+                    className="border-2 border-gray-600 bg-background/70"
                   >
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
-                  <SelectContent className="border border-border/60 bg-card">
+                  <SelectContent className="border border-2 border-gray-600 bg-card">
                     <SelectItem value="pt-BR">Portuguese (pt-BR)</SelectItem>
                     <SelectItem value="en-US">English (en-US)</SelectItem>
                   </SelectContent>
@@ -186,11 +214,11 @@ export function GenerateForm() {
                 >
                   <SelectTrigger
                     id="tone"
-                    className="border-border/60 bg-background/70"
+                    className="border-2 border-gray-600 bg-background/70"
                   >
                     <SelectValue placeholder="Select tone" />
                   </SelectTrigger>
-                  <SelectContent className="border border-border/60 bg-card">
+                  <SelectContent className="border border-2 border-gray-600 bg-card">
                     <SelectItem value="profissional">Professional</SelectItem>
                     <SelectItem value="neutro">Neutral</SelectItem>
                     <SelectItem value="criativo">Creative</SelectItem>
@@ -228,15 +256,20 @@ export function GenerateForm() {
       {response && (
         <Card className="border border-border/70 bg-card/80 shadow-lg">
           <CardHeader>
-            <CardTitle>Generated response</CardTitle>
+            <CardTitle>Generated Resume</CardTitle>
             <CardDescription>
               Download, fine-tune, or plug into your favourite template.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <pre className="max-h-[600px] overflow-auto rounded-xl border border-border/60 bg-background/70 p-4 text-xs leading-relaxed">
-              {JSON.stringify(response, null, 2)}
-            </pre>
+          <CardContent className="space-y-4">
+            <Button
+              onClick={handleDownloadDocx}
+              className="w-full font-bold"
+              variant="default"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download Resume (.docx)
+            </Button>
           </CardContent>
         </Card>
       )}
