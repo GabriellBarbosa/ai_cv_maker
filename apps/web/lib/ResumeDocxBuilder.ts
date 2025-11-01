@@ -25,6 +25,8 @@ export class ResumeDocxBuilder {
   public build(): Document {
     const sections = [
       this.createHeader(),
+      this.createContactInformationSection(),
+      this.createExternalLinksSection(),
       this.createResumeSummary(),
       this.createExperienceSection(),
       this.createEducationSection(),
@@ -73,6 +75,101 @@ export class ResumeDocxBuilder {
         style: "Normal",
       }),
     ];
+  }
+
+  /**
+   * Creates the contact information line if available
+   */
+  private createContactInformationSection(): Paragraph[] {
+    const contact = this.resume.contact_information;
+    if (!contact) {
+      return [];
+    }
+
+    const segments: string[] = [];
+    if (contact.email) {
+      segments.push(`Email: ${contact.email}`);
+    }
+    if (contact.phone) {
+      segments.push(`Phone: ${contact.phone}`);
+    }
+    if (contact.location) {
+      segments.push(contact.location);
+    }
+
+    if (segments.length === 0) {
+      return [];
+    }
+
+    const runs: TextRun[] = [];
+    segments.forEach((segment, index) => {
+      runs.push(
+        new TextRun({
+          text: segment,
+        })
+      );
+
+      if (index < segments.length - 1) {
+        runs.push(
+          new TextRun({
+            text: " | ",
+          })
+        );
+      }
+    });
+
+    return [
+      new Paragraph({
+        children: runs,
+        alignment: AlignmentType.CENTER,
+        spacing: {
+          after: 200,
+        },
+        border: {
+          bottom: {
+            color: "000000",
+            space: 10,
+            style: "single",
+            size: 6,
+          } as IBorderOptions,
+        },
+      }),
+    ];
+  }
+
+  /**
+   * Creates the External Links section
+   */
+  private createExternalLinksSection(): Paragraph[] {
+    if (
+      !this.resume.external_links ||
+      this.resume.external_links.length === 0
+    ) {
+      return [];
+    }
+
+    const paragraphs: Paragraph[] = [];
+
+    this.resume.external_links.forEach((link) => {
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${link.label}: `,
+              bold: true,
+            }),
+            new TextRun({
+              text: link.url,
+            }),
+          ],
+          spacing: {
+            after: 100,
+          },
+        })
+      );
+    });
+
+    return paragraphs;
   }
 
   /**

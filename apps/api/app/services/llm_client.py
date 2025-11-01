@@ -136,7 +136,7 @@ Extract the following information from the candidate and job descriptions:
 - Candidate's name (if mentioned)
 - Current or desired job title
 - Contact details (email, phone number, location)
-- Professional experiences (company, role, dates, location, achievements)
+- Professional experiences (company, role, dates, location, bullets)
 - Education (institution, degree, dates)
 - Languages and proficiency levels
 - Skills and technologies
@@ -306,6 +306,7 @@ Generate a complete resume JSON that highlights relevant experience for this rol
             raise LLMClientError("Empty response from OpenAI")
         
         resume_data = json.loads(content)
+        
         validated_data = _validate_and_clean_json(resume_data)
         
         # Validate with Pydantic schema

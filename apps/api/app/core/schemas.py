@@ -17,7 +17,7 @@ class Experience(BaseModel):
     role: str = Field(..., min_length=1, description="Role is required")
     start_date: str = Field(..., description="Start date must be in YYYY-MM format")
     end_date: str = Field(..., description='End date must be in YYYY-MM format or "Atual"')
-    location: str = Field(..., min_length=1, description="Location is required")
+    location: Optional[str] = Field(default=None, description="Location is optional")
     bullets: List[str] = Field(..., min_length=1, description="At least one bullet point is required")
     tech_stack: List[str] = Field(default_factory=list)
 
@@ -34,6 +34,14 @@ class Experience(BaseModel):
         if not re.match(r'^\d{4}-\d{2}$|^Atual$', v):
             raise ValueError('End date must be in YYYY-MM format or "Atual"')
         return v
+
+    @field_validator('location')
+    @classmethod
+    def normalize_location(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        v = v.strip()
+        return v or None
 
     @field_validator('bullets')
     @classmethod
