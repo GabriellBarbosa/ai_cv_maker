@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -28,7 +28,7 @@ import { Packer } from "docx";
 import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
 import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
-import { Download } from "lucide-react";
+import { CheckCircle2, Circle, Download, Loader2 } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -46,6 +46,56 @@ export function GenerateForm() {
   const [error, setError] = useState<string | null>(null);
   const [generatedLanguage, setGeneratedLanguage] =
     useState<FormData["language"]>("pt-BR");
+  const [statusStep, setStatusStep] = useState<number | null>(null);
+
+  const mapServerErrorToFriendlyMessage = (message: string) => {
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes("too short") || normalized.includes("minimum")) {
+      return "Os textos parecem curtos demais. Adicione mais contexto para que possamos personalizar melhor.";
+    }
+
+    if (normalized.includes("timeout")) {
+      return "A geração expirou. O servidor demorou para responder, tente novamente.";
+    }
+
+    if (normalized.includes("rate limit")) {
+      return "Geramos muitas solicitações em sequência. Aguarde alguns instantes e tente novamente.";
+    }
+
+    if (
+      normalized.includes("unauthorized") ||
+      normalized.includes("forbidden")
+    ) {
+      return "Sua sessão expirou. Atualize a página e tente novamente.";
+    }
+
+    return (
+      message ||
+      "Não conseguimos gerar agora. Verifique suas entradas ou tente novamente em breve."
+    );
+  };
+
+  const statusSteps = useMemo(
+    () => [{ label: "Extraindo requisitos" }, { label: "Gerando conteúdo" }],
+    []
+  );
+
+  const renderStatusIcon = (index: number) => {
+    if (statusStep === null) {
+      return <Circle className="h-4 w-4 text-muted-foreground/40" />;
+    }
+
+    if (index < statusStep) {
+      return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+    }
+
+    if (index === statusStep) {
+      return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
+    }
+
+    return <Circle className="h-4 w-4 text-muted-foreground/40" />;
+  };
 
   const {
     register,
@@ -69,33 +119,135 @@ export function GenerateForm() {
   const tone = watch("tone");
 
   const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
     setError(null);
+
+    const trimmedCandidate = data.candidate_text.trim();
+    const trimmedJob = data.job_text.trim();
+    const MIN_CHAR_COUNT = 120;
+
+    if (trimmedCandidate.length < MIN_CHAR_COUNT) {
+      setError(
+        "Precisamos de mais detalhes sobre você. Inclua conquistas, responsabilidades e resultados relevantes."
+      );
+      return;
+    }
+
+    if (trimmedJob.length < MIN_CHAR_COUNT) {
+      setError(
+        "O texto da vaga está muito curto. Adicione requisitos, responsabilidades ou contexto adicional."
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    setStatusStep(0);
     setResponse(null);
+
+    let timeoutId: number | undefined;
 
     try {
       setGeneratedLanguage(data.language);
+      const controller = new AbortController();
+      timeoutId = window.setTimeout(() => controller.abort(), 45_000);
+
       const res = await fetch(`${API_URL}/v1/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Failed to generate resume");
+        let parsedError: unknown = null;
+
+        try {
+          parsedError = await res.json();
+        } catch {
+          throw new Error("Erro ao gerar conteúdo. Tente novamente.");
+        }
+
+        const errorMessage =
+          typeof parsedError === "object" &&
+          parsedError !== null &&
+          "detail" in parsedError
+            ? String(parsedError.detail)
+            : "Erro ao gerar conteúdo. Tente novamente.";
+
+        throw new Error(errorMessage);
       }
 
       const result = await res.json();
       setResponse(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorName =
+        typeof err === "object" && err !== null && "name" in err
+          ? String((err as { name?: string }).name)
+          : "";
+      const errorMessage = err instanceof Error ? err.message : "";
+
+      if (
+        errorName === "AbortError" ||
+        errorMessage === "The user aborted a request."
+      ) {
+        setError(
+          "Demorou mais do que o esperado. Verifique sua conexão ou tente novamente em instantes."
+        );
+        setStatusStep(null);
+        return;
+      }
+
+      if (
+        err instanceof TypeError &&
+        errorMessage.toLowerCase().includes("fetch")
+      ) {
+        setError(
+          "Não conseguimos falar com o servidor. Confirme sua conexão ou tente mais tarde."
+        );
+        setStatusStep(null);
+        return;
+      }
+
+      if (err instanceof Error) {
+        const message = mapServerErrorToFriendlyMessage(err.message);
+        setError(message);
+      } else {
+        setError("Ocorreu um erro inesperado. Por favor, tente novamente.");
+      }
+
+      setStatusStep(null);
     } finally {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isLoading) {
+      return;
+    }
+
+    if (statusStep === 0) {
+      const timer = window.setTimeout(() => {
+        setStatusStep(1);
+      }, 1_600);
+
+      return () => {
+        window.clearTimeout(timer);
+      };
+    }
+  }, [isLoading, statusStep]);
+
+  useEffect(() => {
+    if (!isLoading && response) {
+      setStatusStep(2);
+    }
+  }, [isLoading, response]);
+
+  const shouldShowStatus = statusStep !== null && (isLoading || response);
 
   const extractCompanyFromGreeting = (greeting: string) => {
     const match = greeting.match(/\b(?:at|da|do|de)\s+([^,]+)/i);
@@ -281,18 +433,58 @@ export function GenerateForm() {
               className="w-full font-bold"
               variant={`default`}
             >
-              {isLoading ? "Generating..." : "Generate resume & cover letter"}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Gerando...
+                </span>
+              ) : (
+                "Generate resume & cover letter"
+              )}
             </Button>
           </CardContent>
         </Card>
       </form>
 
+      {shouldShowStatus && (
+        <Card className="border border-primary/40 bg-primary/5 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              A magia está acontecendo
+            </CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wide text-primary/70">
+              Acompanhe o passo a passo
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {statusSteps.map((step, index) => {
+              const isCurrent = statusStep === index;
+              const isCompleted = statusStep !== null && index < statusStep;
+              const textClass = isCurrent
+                ? "text-foreground font-medium"
+                : isCompleted
+                ? "text-emerald-600 font-medium"
+                : "text-muted-foreground";
+
+              return (
+                <div key={step.label} className="flex items-center gap-3">
+                  {renderStatusIcon(index)}
+                  <span className={`text-sm ${textClass}`}>{step.label}</span>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
       {error && (
         <Card className="border border-destructive/60 bg-destructive/10">
           <CardHeader>
-            <CardTitle className="text-destructive">We hit a snag</CardTitle>
+            <CardTitle className="text-destructive">
+              Encontramos um problema
+            </CardTitle>
             <CardDescription className="text-xs uppercase tracking-wide text-destructive/70">
-              Check your inputs or try again in a moment
+              Revise suas entradas ou tente novamente em instantes
             </CardDescription>
           </CardHeader>
           <CardContent>
