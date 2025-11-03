@@ -132,7 +132,7 @@ def extract_payload(
     
     try:
         client = _get_openai_client()
-        system_prompt = """You are an expert HR assistant that extracts structured information from text.
+        system_prompt = f"""You are an expert HR assistant that extracts structured information from text.
 Extract the following information from the candidate and job descriptions:
 - Candidate's name (if mentioned)
 - Current or desired job title
@@ -142,13 +142,13 @@ Extract the following information from the candidate and job descriptions:
 - Languages and proficiency levels
 - Skills and technologies
 - Relevant external links (e.g., LinkedIn, portfolio) with labels and URLs
+- Translate everything to {language}
 
 Return a valid JSON object with this structure.
 If information is not available, omit the field rather than inventing data.
-For dates, use YYYY-MM format. For ongoing roles, use "Atual"."""
+For dates, use YYYY-MM format. For ongoing roles, use "Present"."""
 
-        user_prompt = f"""Language: {language}
-
+        user_prompt = f"""
 Candidate Information:
 {candidate_text}
 
@@ -233,11 +233,12 @@ Guidelines:
 - Tailor achievements to match job requirements
 - Use action verbs and quantifiable results
 - Dates must be in YYYY-MM format
-- For current positions, use "Atual" for end_date
-- Include relevant tech_stack for each experience
-- Language levels: A2, B1, B2, C1, C2, or Nativo
+- For current positions, use "Present" for end_date
+- Include relevant tech_stack for each experience based on the job description
+- Language levels: A2, B1, B2, C1, C2, or Native
 - Provide a contact_information object with available email, phone, and location (omit fields if unknown)
 - Include up to three external_links with descriptive labels and URLs when relevant
+- Translate everything to {language}
 
 Return a JSON object with this exact structure:
 {{
@@ -254,7 +255,7 @@ Return a JSON object with this exact structure:
       "company": "string",
       "role": "string",
       "start_date": "YYYY-MM",
-      "end_date": "YYYY-MM or Atual",
+      "end_date": "YYYY-MM or Present",
       "location": "string",
       "bullets": ["achievement 1", "achievement 2"],
       "tech_stack": ["skill1", "skill2"]
@@ -271,7 +272,7 @@ Return a JSON object with this exact structure:
   "languages": [
     {{
       "name": "string",
-      "level": "A2|B1|B2|C1|C2|Nativo"
+      "level": "A2|B1|B2|C1|C2|Native"
     }}
   ],
   "external_links": [
@@ -282,8 +283,7 @@ Return a JSON object with this exact structure:
   ]
 }}"""
 
-        user_prompt = f"""Language: {language}
-
+        user_prompt = f"""
 Extracted Data:
 {json.dumps(extracted_data, ensure_ascii=False, indent=2)}
 

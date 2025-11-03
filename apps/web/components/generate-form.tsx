@@ -148,7 +148,7 @@ export function GenerateForm() {
     try {
       setGeneratedLanguage(data.language);
       const controller = new AbortController();
-      timeoutId = window.setTimeout(() => controller.abort(), 45_000);
+      timeoutId = window.setTimeout(() => controller.abort(), 90_000);
 
       const res = await fetch(`${API_URL}/v1/generate`, {
         method: "POST",
