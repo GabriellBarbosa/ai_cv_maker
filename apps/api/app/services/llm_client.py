@@ -30,6 +30,7 @@ from app.core.schemas import (
     ResumeResponse,
     CoverLetterResponse,
 )
+from app.core.normalization import normalize_resume_payload
 
 # Load environment variables from .env file
 load_dotenv()
@@ -308,9 +309,14 @@ Generate a complete resume JSON that highlights relevant experience for this rol
         resume_data = json.loads(content)
         
         validated_data = _validate_and_clean_json(resume_data)
+        try:
+            normalized_data = normalize_resume_payload(validated_data, job_text=job_text)
+        except ValueError as e:
+            logger.error(f"Normalization error: {e}")
+            raise LLMClientError(f"Failed to normalize resume data: {e}") from e
         
         # Validate with Pydantic schema
-        resume = ResumeResponse(**validated_data)
+        resume = ResumeResponse(**normalized_data)
         
         logger.info("Successfully generated resume JSON")
         return resume
