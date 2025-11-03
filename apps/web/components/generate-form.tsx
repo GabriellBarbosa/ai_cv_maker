@@ -27,22 +27,25 @@ import {
 import { Packer } from "docx";
 import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
+import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
 import { Download } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+type FormData = {
+  candidate_text: string;
+  job_text: string;
+  language: "pt-BR" | "en-US";
+  tone: "profissional" | "neutro" | "criativo";
+  format: "docx";
+};
 
 export function GenerateForm() {
   const [response, setResponse] = useState<GenerateResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  type FormData = {
-    candidate_text: string;
-    job_text: string;
-    language: "pt-BR" | "en-US";
-    tone: "profissional" | "neutro" | "criativo";
-    format: "docx";
-  };
+  const [generatedLanguage, setGeneratedLanguage] =
+    useState<FormData["language"]>("pt-BR");
 
   const {
     register,
@@ -71,6 +74,7 @@ export function GenerateForm() {
     setResponse(null);
 
     try {
+      setGeneratedLanguage(data.language);
       const res = await fetch(`${API_URL}/v1/generate`, {
         method: "POST",
         headers: {
@@ -93,13 +97,23 @@ export function GenerateForm() {
     }
   };
 
-  const handleDownloadDocx = async () => {
+  const extractCompanyFromGreeting = (greeting: string) => {
+    const match = greeting.match(/\b(?:at|da|do|de)\s+([^,]+)/i);
+
+    if (!match) {
+      return "";
+    }
+
+    return match[1]?.trim() ?? "";
+  };
+
+  const handleDownloadResumeDocx = async () => {
     if (!response?.resume) return;
 
     try {
       const builder = new ResumeDocxBuilder(response.resume);
       const doc = builder.build();
-      
+
       const blob = await Packer.toBlob(doc);
       // Sanitize filename by removing/replacing invalid characters
       const sanitizedName = response.resume.name
@@ -113,6 +127,40 @@ export function GenerateForm() {
         err instanceof Error
           ? `Failed to download resume: ${err.message}`
           : "Failed to download resume"
+      );
+    }
+  };
+
+  const handleDownloadCoverLetterDocx = async () => {
+    if (!response?.cover_letter || !response?.resume) return;
+
+    try {
+      const { cover_letter: coverLetter, resume } = response;
+      const builder = new CoverLetterDocxBuilder(
+        extractCompanyFromGreeting(coverLetter.greeting),
+        resume.job_title,
+        coverLetter.body,
+        {
+          greeting: coverLetter.greeting,
+          signature: coverLetter.signature,
+          candidateName: resume.name,
+          locale: generatedLanguage,
+        }
+      );
+
+      const doc = builder.build();
+      const blob = await Packer.toBlob(doc);
+      const sanitizedName = resume.name
+        .replace(/[<>:"/\\|?*]/g, "")
+        .replace(/\s+/g, "_")
+        .trim();
+      const fileName = `${sanitizedName}_Cover_Letter.docx`;
+      saveAs(blob, fileName);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? `Failed to download cover letter: ${err.message}`
+          : "Failed to download cover letter"
       );
     }
   };
@@ -263,12 +311,20 @@ export function GenerateForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              onClick={handleDownloadDocx}
+              onClick={handleDownloadResumeDocx}
               className="w-full font-bold"
               variant="default"
             >
               <Download className="mr-2 h-4 w-4" />
               Download Resume (.docx)
+            </Button>
+            <Button
+              onClick={handleDownloadCoverLetterDocx}
+              className="w-full font-bold"
+              variant="secondary"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download Cover Letter (.docx)
             </Button>
           </CardContent>
         </Card>
