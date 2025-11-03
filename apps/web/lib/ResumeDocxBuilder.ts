@@ -9,14 +9,50 @@ import {
 } from "docx";
 import type { ResumeResponse } from "@ai-cv-maker/schemas";
 
+type SupportedLocale = "pt-BR" | "en-US";
+
+const LOCALE_TEXTS = {
+  "pt-BR": {
+    summaryHeading: "Resumo",
+    experienceHeading: "Experiência",
+    educationHeading: "Formação Acadêmica",
+    languagesHeading: "Idiomas",
+    skillsHeading: "Competências",
+    technologiesLabel: "Tecnologias: ",
+    contactEmailLabel: "E-mail",
+    contactPhoneLabel: "Telefone",
+    presentLabel: "Atual",
+  },
+  "en-US": {
+    summaryHeading: "Summary",
+    experienceHeading: "Experience",
+    educationHeading: "Education",
+    languagesHeading: "Languages",
+    skillsHeading: "Skills",
+    technologiesLabel: "Technologies: ",
+    contactEmailLabel: "Email",
+    contactPhoneLabel: "Phone",
+    presentLabel: "Present",
+  },
+} as const;
+
+const EN_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+});
+
 /**
  * ResumeDocxBuilder creates a formatted DOCX document from ResumeResponse data
  */
 export class ResumeDocxBuilder {
   private resume: ResumeResponse;
+  private locale: SupportedLocale;
+  private texts: (typeof LOCALE_TEXTS)[SupportedLocale];
 
-  constructor(resume: ResumeResponse) {
+  constructor(resume: ResumeResponse, locale: SupportedLocale = "pt-BR") {
     this.resume = resume;
+    this.locale = locale;
+    this.texts = LOCALE_TEXTS[locale];
   }
 
   /**
@@ -88,10 +124,10 @@ export class ResumeDocxBuilder {
 
     const segments: string[] = [];
     if (contact.email) {
-      segments.push(`Email: ${contact.email}`);
+      segments.push(`${this.texts.contactEmailLabel}: ${contact.email}`);
     }
     if (contact.phone) {
-      segments.push(`Phone: ${contact.phone}`);
+      segments.push(`${this.texts.contactPhoneLabel}: ${contact.phone}`);
     }
     if (contact.location) {
       segments.push(contact.location);
@@ -178,7 +214,7 @@ export class ResumeDocxBuilder {
   private createResumeSummary(): Paragraph[] {
     return [
       new Paragraph({
-        text: "Resume",
+        text: this.texts.summaryHeading,
         heading: HeadingLevel.HEADING_2,
         spacing: {
           before: 200,
@@ -208,7 +244,7 @@ export class ResumeDocxBuilder {
   private createExperienceSection(): Paragraph[] {
     const paragraphs: Paragraph[] = [
       new Paragraph({
-        text: "Experience",
+        text: this.texts.experienceHeading,
         heading: HeadingLevel.HEADING_2,
         spacing: {
           before: 200,
@@ -252,7 +288,7 @@ export class ResumeDocxBuilder {
       // Location and dates
       paragraphs.push(
         new Paragraph({
-          text: `${exp.location} | ${exp.start_date} - ${exp.end_date}`,
+          text: this.buildLocationAndDates(exp.location, exp.start_date, exp.end_date),
           spacing: {
             after: 100,
           },
@@ -280,7 +316,7 @@ export class ResumeDocxBuilder {
           new Paragraph({
             children: [
               new TextRun({
-                text: "Technologies: ",
+                text: this.texts.technologiesLabel,
                 italics: true,
               }),
               new TextRun({
@@ -309,7 +345,7 @@ export class ResumeDocxBuilder {
 
     const paragraphs: Paragraph[] = [
       new Paragraph({
-        text: "Education",
+        text: this.texts.educationHeading,
         heading: HeadingLevel.HEADING_2,
         spacing: {
           before: 200,
@@ -351,7 +387,7 @@ export class ResumeDocxBuilder {
 
       paragraphs.push(
         new Paragraph({
-          text: `${edu.start_date} - ${edu.end_date}`,
+          text: this.formatDateRange(edu.start_date, edu.end_date),
           spacing: {
             after: 100,
           },
@@ -372,7 +408,7 @@ export class ResumeDocxBuilder {
 
     const paragraphs: Paragraph[] = [
       new Paragraph({
-        text: "Languages",
+        text: this.texts.languagesHeading,
         heading: HeadingLevel.HEADING_2,
         spacing: {
           before: 200,
@@ -424,7 +460,7 @@ export class ResumeDocxBuilder {
 
     const paragraphs: Paragraph[] = [
       new Paragraph({
-        text: "Skills",
+        text: this.texts.skillsHeading,
         heading: HeadingLevel.HEADING_2,
         spacing: {
           before: 200,
@@ -448,5 +484,61 @@ export class ResumeDocxBuilder {
     ];
 
     return paragraphs;
+  }
+
+  private formatDate(value: string | undefined): string {
+    if (!value) {
+      return "";
+    }
+
+    const normalized = value.trim();
+    if (!normalized) {
+      return "";
+    }
+
+    if (normalized.toLowerCase() === "atual" || normalized.toLowerCase() === "present") {
+      return this.texts.presentLabel;
+    }
+
+    const [year, month] = normalized.split("-");
+    if (!year || !month) {
+      return normalized;
+    }
+
+    const numericMonth = Number(month);
+    if (Number.isNaN(numericMonth) || numericMonth < 1 || numericMonth > 12) {
+      return normalized;
+    }
+
+    if (this.locale === "pt-BR") {
+      return `${String(numericMonth).padStart(2, "0")}/${year}`;
+    }
+
+    return EN_DATE_FORMATTER.format(new Date(Number(year), numericMonth - 1, 1));
+  }
+
+  private formatDateRange(start: string, end: string): string {
+    const formattedStart = this.formatDate(start);
+    const formattedEnd = this.formatDate(end);
+
+    if (formattedStart && formattedEnd) {
+      return `${formattedStart} - ${formattedEnd}`;
+    }
+
+    return formattedStart || formattedEnd || "";
+  }
+
+  private buildLocationAndDates(location: string | null | undefined, start: string, end: string): string {
+    const parts: string[] = [];
+    if (location) {
+      parts.push(location);
+    }
+
+    const dateRange = this.formatDateRange(start, end);
+    if (dateRange) {
+      parts.push(dateRange);
+    }
+
+    return parts.join(" | ");
   }
 }

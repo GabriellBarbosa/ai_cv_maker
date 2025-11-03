@@ -77,7 +77,7 @@ export function GenerateForm() {
   };
 
   const statusSteps = useMemo(
-    () => [{ label: "Extraindo requisitos" }, { label: "Gerando conteúdo" }],
+    () => [{ label: "Extracting requirements" }, { label: "Generating content" }],
     []
   );
 
@@ -263,7 +263,10 @@ export function GenerateForm() {
     if (!response?.resume) return;
 
     try {
-      const builder = new ResumeDocxBuilder(response.resume);
+      const builder = new ResumeDocxBuilder(
+        response.resume,
+        generatedLanguage
+      );
       const doc = builder.build();
 
       const blob = await Packer.toBlob(doc);
@@ -450,10 +453,10 @@ export function GenerateForm() {
         <Card className="border border-primary/40 bg-primary/5 shadow-lg">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">
-              A magia está acontecendo
+              Magic is happening
             </CardTitle>
             <CardDescription className="text-xs uppercase tracking-wide text-primary/70">
-              Acompanhe o passo a passo
+              Follow the step by step
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
