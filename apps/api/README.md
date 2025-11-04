@@ -67,17 +67,31 @@ Generates only the cover letter.
 - Useful for tracking and debugging
 
 ### Structured Logging Middleware
-- Logs all requests and responses in JSON format
-- Includes request_id, method, path, status_code, and duration
+- Emits JSON logs for the request lifecycle (`http_request_started`, `http_request_completed`, `request_metrics`)
+- Automatically enriches logs with `request_id`, method, path, status code, duration, and LLM token usage
+- Token usage and latency per LLM step are emitted via `llm_call_completed`
 - Example log:
   ```json
   {
-    "event": "request_completed",
+    "event": "request_metrics",
     "request_id": "abc-123",
     "method": "POST",
     "path": "/v1/generate",
     "status_code": 200,
-    "duration_ms": 1.25
+    "duration_ms": 245.17,
+    "tokens": {
+      "prompt_tokens": 3124,
+      "completion_tokens": 1280,
+      "total_tokens": 4404
+    },
+    "metrics_snapshot": {
+      "requests": {"success": 42, "error": 3},
+      "step_average_duration_ms": {
+        "extract_payload": 418.73,
+        "generate_resume_json": 702.11,
+        "generate_cover_text": 489.32
+      }
+    }
   }
   ```
 
@@ -85,6 +99,14 @@ Generates only the cover letter.
 - Restricted to web host: `http://localhost:3000`
 - Allows credentials
 - Allows all HTTP methods and headers
+
+## Metrics & Dashboards
+- Success/error counters and moving averages per LLM step are maintained in memory and emitted with each `request_metrics` log.
+- Basic dashboards can be built by tailing logs and grouping by `event`, `handler`, or `step`. Example:
+  ```bash
+  uvicorn app.main:app --reload | jq 'select(.event=="request_metrics") | {status_code, duration_ms, tokens}'
+  ```
+- LLM-specific telemetry is available via `llm_call_started`, `llm_call_completed`, and `llm_call_failed` events.
 
 ## Testing
 
@@ -147,6 +169,8 @@ app/
 │   ├── health.py        # Health check endpoint
 │   └── generate.py      # Generation endpoints
 ├── core/
+│   ├── metrics.py       # In-memory metrics recorder
+│   ├── observability.py # Logging helpers and request context
 │   └── schemas.py       # Pydantic models and validation
 └── middleware/
     ├── request_id.py    # Request ID middleware

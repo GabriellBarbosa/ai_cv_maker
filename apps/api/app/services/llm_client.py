@@ -15,6 +15,7 @@ Features:
 import json
 import logging
 import os
+import time
 from typing import Dict, Any, Optional
 from tenacity import (
     retry,
@@ -26,6 +27,7 @@ from openai import OpenAI, APIError, APITimeoutError, RateLimitError
 from pydantic import ValidationError
 from dotenv import load_dotenv
 
+from app.core.observability import log_event, record_llm_usage
 from app.core.schemas import (
     ResumeResponse,
     CoverLetterResponse,
@@ -128,8 +130,9 @@ def extract_payload(
     Raises:
         LLMClientError: If extraction fails or returns invalid data
     """
-    logger.info("Extracting payload from candidate and job text")
-    
+    start_time = time.perf_counter()
+    log_event("llm_call_started", logger=logger, step="extract_payload")
+
     try:
         client = _get_openai_client()
         system_prompt = f"""You are an expert HR assistant that extracts structured information from text.
@@ -170,21 +173,63 @@ Extract structured data from the above information."""
         content = response.choices[0].message.content
         if not content:
             raise LLMClientError("Empty response from OpenAI")
-        
+
         extracted_data = json.loads(content)
         validated_data = _validate_and_clean_json(extracted_data)
-        
-        logger.info("Successfully extracted payload")
+
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        record_llm_usage(
+            "extract_payload",
+            response.usage,
+            duration_ms=duration_ms,
+            model=response.model if hasattr(response, "model") else None,
+            logger=logger,
+        )
+
+        log_event(
+            "payload_extracted",
+            logger=logger,
+            step="extract_payload",
+            status="success",
+            duration_ms=duration_ms,
+        )
         return validated_data
         
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse JSON from OpenAI response: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="extract_payload",
+            error="invalid_json_response",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Invalid JSON response: {e}")
     except (APIError, APITimeoutError, RateLimitError) as e:
-        logger.error(f"OpenAI API error: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="extract_payload",
+            error="openai_api_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise
     except Exception as e:
-        logger.error(f"Unexpected error in extract_payload: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="extract_payload",
+            error="unexpected_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Failed to extract payload: {e}")
 
 
@@ -216,8 +261,9 @@ def generate_resume_json(
         LLMClientError: If generation fails or returns invalid data
         ValidationError: If the generated data doesn't match the schema
     """
-    logger.info("Generating resume JSON")
-    
+    start_time = time.perf_counter()
+    log_event("llm_call_started", logger=logger, step="generate_resume_json")
+
     try:
         client = _get_openai_client()
         tone_instructions = {
@@ -312,26 +358,86 @@ Generate a complete resume JSON that highlights relevant experience for this rol
         try:
             normalized_data = normalize_resume_payload(validated_data, job_text=job_text)
         except ValueError as e:
-            logger.error(f"Normalization error: {e}")
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+            log_event(
+                "llm_call_failed",
+                logger=logger,
+                level=logging.ERROR,
+                step="generate_resume_json",
+                error="normalization_error",
+                details=str(e),
+                duration_ms=duration_ms,
+            )
             raise LLMClientError(f"Failed to normalize resume data: {e}") from e
         
         # Validate with Pydantic schema
         resume = ResumeResponse(**normalized_data)
-        
-        logger.info("Successfully generated resume JSON")
+
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        record_llm_usage(
+            "generate_resume_json",
+            response.usage,
+            duration_ms=duration_ms,
+            model=response.model if hasattr(response, "model") else None,
+            logger=logger,
+        )
+
+        log_event(
+            "resume_generated",
+            logger=logger,
+            step="generate_resume_json",
+            status="success",
+            duration_ms=duration_ms,
+        )
         return resume
         
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse JSON from OpenAI response: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_resume_json",
+            error="invalid_json_response",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Invalid JSON response: {e}")
     except ValidationError as e:
-        logger.error(f"Generated resume doesn't match schema: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_resume_json",
+            error="schema_validation_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Invalid resume structure: {e}")
     except (APIError, APITimeoutError, RateLimitError) as e:
-        logger.error(f"OpenAI API error: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_resume_json",
+            error="openai_api_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise
     except Exception as e:
-        logger.error(f"Unexpected error in generate_resume_json: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_resume_json",
+            error="unexpected_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Failed to generate resume: {e}")
 
 
@@ -369,8 +475,9 @@ def generate_cover_text(
         LLMClientError: If generation fails or returns invalid data
         ValidationError: If the generated data doesn't match the schema
     """
-    logger.info("Generating cover letter text")
-    
+    start_time = time.perf_counter()
+    log_event("llm_call_started", logger=logger, step="generate_cover_text")
+
     try:
         client = _get_openai_client()
         tone_instructions = {
@@ -446,19 +553,70 @@ Write a cover letter that connects the candidate's experience to this specific r
         
         # Validate with Pydantic schema
         cover_letter = CoverLetterResponse(**cover_data)
-        
-        logger.info("Successfully generated cover letter")
+
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        record_llm_usage(
+            "generate_cover_text",
+            response.usage,
+            duration_ms=duration_ms,
+            model=response.model if hasattr(response, "model") else None,
+            logger=logger,
+        )
+
+        log_event(
+            "cover_letter_generated",
+            logger=logger,
+            step="generate_cover_text",
+            status="success",
+            duration_ms=duration_ms,
+        )
         return cover_letter
         
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse JSON from OpenAI response: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_cover_text",
+            error="invalid_json_response",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Invalid JSON response: {e}")
     except ValidationError as e:
-        logger.error(f"Generated cover letter doesn't match schema: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_cover_text",
+            error="schema_validation_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Invalid cover letter structure: {e}")
     except (APIError, APITimeoutError, RateLimitError) as e:
-        logger.error(f"OpenAI API error: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_cover_text",
+            error="openai_api_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise
     except Exception as e:
-        logger.error(f"Unexpected error in generate_cover_text: {e}")
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        log_event(
+            "llm_call_failed",
+            logger=logger,
+            level=logging.ERROR,
+            step="generate_cover_text",
+            error="unexpected_error",
+            details=str(e),
+            duration_ms=duration_ms,
+        )
         raise LLMClientError(f"Failed to generate cover letter: {e}")

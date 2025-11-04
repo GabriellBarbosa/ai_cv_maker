@@ -12,6 +12,7 @@ from app.services.llm_client import (
     generate_cover_text,
     LLMClientError,
 )
+from app.core.observability import log_event, update_request_context
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -21,7 +22,8 @@ router = APIRouter()
 async def generate_all(request: GenerateRequest):
     """Generate both resume and cover letter"""
     try:
-        logger.info("Generating complete CV package")
+        update_request_context(handler="generate_all")
+        log_event("generate_all_started", logger=logger)
         
         # Step 1: Extract structured data
         extracted_data = extract_payload(
@@ -48,14 +50,26 @@ async def generate_all(request: GenerateRequest):
             tone=request.tone,
         )
         
-        logger.info("Successfully generated complete CV package")
+        log_event("generate_all_completed", logger=logger, status="success")
         return GenerateResponse(resume=resume, cover_letter=cover_letter)
         
     except LLMClientError as e:
-        logger.error(f"LLM client error: {e}")
+        log_event(
+            "generate_all_failed",
+            logger=logger,
+            level=logging.ERROR,
+            error="llm_client_error",
+            details=str(e),
+        )
         raise HTTPException(status_code=500, detail=f"Failed to generate content: {str(e)}")
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        log_event(
+            "generate_all_failed",
+            logger=logger,
+            level=logging.ERROR,
+            error="unexpected_error",
+            details=str(e),
+        )
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -63,7 +77,8 @@ async def generate_all(request: GenerateRequest):
 async def generate_resume(request: GenerateRequest):
     """Generate only resume"""
     try:
-        logger.info("Generating resume only")
+        update_request_context(handler="generate_resume")
+        log_event("generate_resume_started", logger=logger)
         
         # Extract structured data
         extracted_data = extract_payload(
@@ -80,14 +95,26 @@ async def generate_resume(request: GenerateRequest):
             tone=request.tone,
         )
         
-        logger.info("Successfully generated resume")
+        log_event("generate_resume_completed", logger=logger, status="success")
         return resume
         
     except LLMClientError as e:
-        logger.error(f"LLM client error: {e}")
+        log_event(
+            "generate_resume_failed",
+            logger=logger,
+            level=logging.ERROR,
+            error="llm_client_error",
+            details=str(e),
+        )
         raise HTTPException(status_code=500, detail=f"Failed to generate resume: {str(e)}")
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        log_event(
+            "generate_resume_failed",
+            logger=logger,
+            level=logging.ERROR,
+            error="unexpected_error",
+            details=str(e),
+        )
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -95,7 +122,8 @@ async def generate_resume(request: GenerateRequest):
 async def generate_cover_letter_endpoint(request: GenerateRequest):
     """Generate only cover letter"""
     try:
-        logger.info("Generating cover letter only")
+        update_request_context(handler="generate_cover_letter")
+        log_event("generate_cover_letter_started", logger=logger)
         
         # Extract structured data
         extracted_data = extract_payload(
@@ -124,12 +152,24 @@ async def generate_cover_letter_endpoint(request: GenerateRequest):
             tone=request.tone,
         )
         
-        logger.info("Successfully generated cover letter")
+        log_event("generate_cover_letter_completed", logger=logger, status="success")
         return cover_letter
         
     except LLMClientError as e:
-        logger.error(f"LLM client error: {e}")
+        log_event(
+            "generate_cover_letter_failed",
+            logger=logger,
+            level=logging.ERROR,
+            error="llm_client_error",
+            details=str(e),
+        )
         raise HTTPException(status_code=500, detail=f"Failed to generate cover letter: {str(e)}")
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        log_event(
+            "generate_cover_letter_failed",
+            logger=logger,
+            level=logging.ERROR,
+            error="unexpected_error",
+            details=str(e),
+        )
         raise HTTPException(status_code=500, detail="Internal server error")
