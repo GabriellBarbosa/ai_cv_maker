@@ -1,17 +1,3 @@
-"""
-OpenAI LLM Client Service
-
-This module provides integration with OpenAI API for:
-- Extracting structured data from candidate and job descriptions
-- Generating resume JSON
-- Generating cover letter text
-
-Features:
-- Retry logic with exponential backoff
-- 30 second timeout
-- Hallucination and empty field handling
-"""
-
 import json
 import logging
 import os
@@ -34,24 +20,19 @@ from app.core.schemas import (
 )
 from app.core.normalization import normalize_resume_payload
 
-from app.prompts.load_md_prompt import load_raw_text_normalization_prompt
+from app.prompts.load_md_prompt import (
+    load_raw_text_normalization_prompt,
+    load_resume_json_prompt,
+    load_cover_letter_prompt
+)
 
-# Load environment variables from .env file
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-# Module-level client instance (singleton pattern)
 _client: Optional[OpenAI] = None
 
-
 def _get_openai_client() -> OpenAI:
-    """
-    Get or create OpenAI client instance (singleton pattern).
-    
-    This function creates a single client instance that is reused across all calls,
-    avoiding the overhead of creating new connections.
-    """
     global _client
     
     if _client is None:
@@ -67,23 +48,10 @@ def _get_openai_client() -> OpenAI:
 
 
 class LLMClientError(Exception):
-    """Custom exception for LLM client errors"""
     pass
 
 
 def _validate_and_clean_json(data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Validate and clean JSON data to handle hallucinations and empty fields.
-    
-    Args:
-        data: Raw JSON data from LLM
-        
-    Returns:
-        Cleaned and validated JSON data
-        
-    Raises:
-        LLMClientError: If data is invalid or contains too many empty fields
-    """
     if not data or not isinstance(data, dict):
         raise LLMClientError("Invalid JSON structure received from LLM")
     
@@ -115,23 +83,6 @@ def extract_payload(
     job_text: str,
     language: str = "pt-BR",
 ) -> Dict[str, Any]:
-    """
-    Extract structured data from candidate and job description text.
-    
-    This function uses OpenAI to parse free-form text into structured data
-    that can be used for resume and cover letter generation.
-    
-    Args:
-        candidate_text: Free-form text describing candidate's experience
-        job_text: Free-form text describing the job requirements
-        language: Language code (pt-BR or en-US)
-        
-    Returns:
-        Dictionary with extracted structured data
-        
-    Raises:
-        LLMClientError: If extraction fails or returns invalid data
-    """
     start_time = time.perf_counter()
     log_event("llm_call_started", logger=logger, step="extract_payload")
 
@@ -228,22 +179,6 @@ def generate_resume_json(
     language: str = "pt-BR",
     tone: str = "profissional",
 ) -> ResumeResponse:
-    """
-    Generate a structured resume JSON from extracted data.
-    
-    Args:
-        extracted_data: Structured data from extract_payload
-        job_text: Job description to tailor the resume
-        language: Language code (pt-BR or en-US)
-        tone: Tone of the resume (profissional, neutro, criativo)
-        
-    Returns:
-        ResumeResponse object with structured resume data
-        
-    Raises:
-        LLMClientError: If generation fails or returns invalid data
-        ValidationError: If the generated data doesn't match the schema
-    """
     start_time = time.perf_counter()
     log_event("llm_call_started", logger=logger, step="generate_resume_json")
 
@@ -255,77 +190,17 @@ def generate_resume_json(
             "criativo": "Use a creative, engaging tone that highlights personality.",
         }
         
-        system_prompt = f"""You are an expert resume writer. Create a structured resume in JSON format.
-
-Guidelines:
-- {tone_instructions.get(tone, tone_instructions['profissional'])}
-- Tailor achievements to match job requirements
-- Use action verbs and quantifiable results
-- Dates must be in YYYY-MM format
-- For current positions, use "Present" for end_date
-- Include relevant tech_stack for each experience based on the job description
-- Language levels: A2, B1, B2, C1, C2, or Native
-- Provide a contact_information object with available email, phone, and location (omit fields if unknown)
-- Include up to three external_links with descriptive labels and URLs when relevant
-- Translate everything to {language}
-
-Return a JSON object with this exact structure:
-{{
-  "name": "string",
-  "job_title": "string",
-  "candidate_introduction": "string (2-3 sentences)",
-  "contact_information": {{
-    "email": "string or null",
-    "phone": "string or null",
-    "location": "string or null"
-  }},
-  "experiences": [
-    {{
-      "company": "string",
-      "role": "string",
-      "start_date": "YYYY-MM",
-      "end_date": "YYYY-MM or Present",
-      "location": "string",
-      "bullets": ["achievement 1", "achievement 2"],
-      "tech_stack": ["skill1", "skill2"]
-    }}
-  ],
-  "education": [
-    {{
-      "institution": "string",
-      "degree": "string",
-      "start_date": "YYYY-MM",
-      "end_date": "YYYY-MM"
-    }}
-  ],
-  "languages": [
-    {{
-      "name": "string",
-      "level": "A2|B1|B2|C1|C2|Native"
-    }}
-  ],
-  "external_links": [
-    {{
-      "label": "string",
-      "url": "string"
-    }}
-  ]
-}}"""
-
-        user_prompt = f"""
-Extracted Data:
-{json.dumps(extracted_data, ensure_ascii=False, indent=2)}
-
-Job Requirements:
-{job_text}
-
-Generate a complete resume JSON that highlights relevant experience for this role."""
+        system_prompt = load_resume_json_prompt(
+            tone_instructions=tone_instructions.get(tone, tone_instructions['profissional']),
+            language=language,
+            extracted_data=json.dumps(extracted_data, ensure_ascii=False, indent=2),
+            job_text=job_text
+        )
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
             ],
             temperature=0.5,
             response_format={"type": "json_object"},
@@ -438,26 +313,6 @@ def generate_cover_text(
     language: str = "pt-BR",
     tone: str = "profissional",
 ) -> CoverLetterResponse:
-    """
-    Generate a cover letter text tailored to the job description.
-    
-    The cover letter should be 150-220 words and reference 2-3 key job requirements.
-    
-    Args:
-        candidate_name: Name of the candidate
-        job_title: Job title being applied for
-        candidate_summary: Brief summary of candidate's background
-        job_text: Job description
-        language: Language code (pt-BR or en-US)
-        tone: Tone of the letter (profissional, neutro, criativo)
-        
-    Returns:
-        CoverLetterResponse object with greeting, body, and signature
-        
-    Raises:
-        LLMClientError: If generation fails or returns invalid data
-        ValidationError: If the generated data doesn't match the schema
-    """
     start_time = time.perf_counter()
     log_event("llm_call_started", logger=logger, step="generate_cover_text")
 
@@ -479,39 +334,19 @@ def generate_cover_text(
             "en-US": f"Sincerely,\n{candidate_name}",
         }
         
-        system_prompt = f"""You are an expert cover letter writer. Write a compelling cover letter.
-
-Guidelines:
-- {tone_instructions.get(tone, tone_instructions['profissional'])}
-- Length: 150-220 words for the body
-- Reference 2-3 specific job requirements
-- Highlight relevant achievements
-- Show enthusiasm and fit for the role
-- Be specific and avoid generic statements
-
-Return a JSON object with this structure:
-{{
-  "greeting": "string",
-  "body": "string (150-220 words)",
-  "signature": "string"
-}}"""
-
-        user_prompt = f"""Language: {language}
-
-Candidate: {candidate_name}
-Position: {job_title}
-Background: {candidate_summary}
-
-Job Description:
-{job_text}
-
-Write a cover letter that connects the candidate's experience to this specific role."""
+        system_prompt = load_cover_letter_prompt(
+            tone_instructions=tone_instructions.get(tone, tone_instructions['profissional']),
+            language=language,
+            candidate_name=candidate_name,
+            job_title=job_title,
+            candidate_summary=candidate_summary,
+            job_text=job_text
+        )
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
             ],
             temperature=0.7,
             response_format={"type": "json_object"},
