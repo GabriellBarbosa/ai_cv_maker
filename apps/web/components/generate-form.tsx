@@ -29,6 +29,7 @@ import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
 import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
 import { CheckCircle2, Circle, Download, Loader2 } from "lucide-react";
+import { professionalInfoPlaceholder } from "@/utils/constants/professional_info_placeholder";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -336,11 +337,11 @@ export function GenerateForm() {
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <Label className="mb-2 block" htmlFor="candidate_text">
-                Candidate profile
+                Your professional info
               </Label>
               <Textarea
                 id="candidate_text"
-                placeholder="Your name, desired role, summaries, achievements, bullet points, education—anything you would share with a recruiter."
+                placeholder={professionalInfoPlaceholder}
                 rows={7}
                 {...register("candidate_text")}
                 className={`min-h-[180px] resize-y border-2 border-gray-600 bg-background/70 text-sm leading-relaxed ${
