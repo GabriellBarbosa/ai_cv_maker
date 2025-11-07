@@ -14,6 +14,7 @@ import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const MIN_CHAR_COUNT = 120;
+const PROFESSIONAL_INFO_STORAGE_KEY = "generate-form-professional-info";
 
 export type GenerateFormData = {
   candidate_text: string;
@@ -72,8 +73,35 @@ export function useGenerateForm(): UseGenerateFormReturn {
 
   const language = form.watch("language");
   const tone = form.watch("tone");
+  const candidateText = form.watch("candidate_text");
 
   const shouldShowStatus = statusStep !== null && (isLoading || !!response);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const savedText = window.localStorage.getItem(
+      PROFESSIONAL_INFO_STORAGE_KEY
+    );
+
+    if (savedText) {
+      form.setValue("candidate_text", savedText, { shouldDirty: true });
+    }
+  }, [form]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (!candidateText) {
+      window.localStorage.removeItem(PROFESSIONAL_INFO_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(
+      PROFESSIONAL_INFO_STORAGE_KEY,
+      candidateText
+    );
+  }, [candidateText]);
 
   const mapServerErrorToFriendlyMessage = useCallback((message: string) => {
     const normalized = message.toLowerCase();
