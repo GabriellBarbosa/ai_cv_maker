@@ -24,7 +24,7 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Export structured JSON you can feed into any template.
+                Download your polished resume under a minute.
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
