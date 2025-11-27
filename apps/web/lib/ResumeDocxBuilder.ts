@@ -7,7 +7,7 @@ import {
   convertInchesToTwip,
   IBorderOptions,
 } from "docx";
-import type { ResumeResponse } from "@ai-cv-maker/schemas";
+import type { ResumeResponse } from "@/types";
 
 type SupportedLocale = "pt-BR" | "en-US";
 

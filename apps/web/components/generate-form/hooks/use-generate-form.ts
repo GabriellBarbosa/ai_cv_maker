@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  GenerateRequestSchema,
-  type GenerateResponse,
-} from "@ai-cv-maker/schemas";
+import { GenerateRequestSchema, type GenerateResponse } from "@/types";
 import { Packer } from "docx";
 import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
@@ -97,10 +94,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
       return;
     }
 
-    window.localStorage.setItem(
-      PROFESSIONAL_INFO_STORAGE_KEY,
-      candidateText
-    );
+    window.localStorage.setItem(PROFESSIONAL_INFO_STORAGE_KEY, candidateText);
   }, [candidateText]);
 
   const mapServerErrorToFriendlyMessage = useCallback((message: string) => {
@@ -276,10 +270,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
     if (!response?.resume) return;
 
     try {
-      const builder = new ResumeDocxBuilder(
-        response.resume,
-        generatedLanguage
-      );
+      const builder = new ResumeDocxBuilder(response.resume, generatedLanguage);
       const doc = builder.build();
 
       const blob = await Packer.toBlob(doc);

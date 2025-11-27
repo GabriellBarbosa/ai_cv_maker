@@ -1,4 +1,4 @@
-# @ai-cv-maker/schemas
+# @/types
 
 Shared validation schemas for the AI CV Maker application. This package provides identical validation logic for both frontend (TypeScript/Zod) and backend (Python/Pydantic).
 
@@ -78,7 +78,7 @@ import {
   ResumeResponseSchema,
   type GenerateRequest,
   type ResumeResponse
-} from '@ai-cv-maker/schemas';
+} from '@/types';
 
 // Validate request data
 const requestData = GenerateRequestSchema.parse({
