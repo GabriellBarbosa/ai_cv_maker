@@ -11,8 +11,6 @@ from slowapi.util import get_remote_address
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.errors import RateLimitExceeded
 
-environment = os.getenv('APP_ENV', 'development')
-
 # Configure structured logging
 logging.basicConfig(
     level=logging.INFO,
@@ -35,6 +33,7 @@ app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(StructuredLoggingMiddleware)
 app.add_middleware(RequestIdMiddleware)
 
+environment = os.getenv('APP_ENV', 'development')
 origins = ["http://localhost:3000"] if environment == 'development' else ["https://ai-cv-maker-web.vercel.app"]
 
 # CORS middleware - restricted to web host

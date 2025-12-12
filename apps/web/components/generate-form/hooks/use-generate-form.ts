@@ -188,8 +188,11 @@ export function useGenerateForm(): UseGenerateFormReturn {
           const errorMessage =
             typeof parsedError === "object" &&
             parsedError !== null &&
-            "detail" in parsedError
-              ? String((parsedError as { detail?: string }).detail)
+            ("detail" in parsedError || "error" in parsedError)
+              ? String(
+                  (parsedError as { detail?: string }).detail ||
+                    (parsedError as { error?: string }).error
+                )
               : "Erro ao gerar conteúdo. Tente novamente.";
 
           throw new Error(errorMessage);
