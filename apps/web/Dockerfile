@@ -4,8 +4,7 @@ FROM node:20-alpine AS base
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1 \
     PNPM_HOME="/pnpm" \
-    PNPM_STORE_PATH="/pnpm/store" \
-    PATH="$PNPM_HOME:$PATH"
+    PNPM_STORE_PATH="/pnpm/store"
 RUN corepack enable
 
 FROM base AS deps
