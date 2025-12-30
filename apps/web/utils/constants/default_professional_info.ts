@@ -1,10 +1,10 @@
-export const professionalInfoPlaceholder = `Example:
+export const defaultProfessionalInfo = `Example:
 Gabriel Barbosa de Almeida
-Full Stack Developer (Mid-Level)
+Full Stack Developer
 
 São Paulo - SP, Brazil
-+55 (11) 98762-9389 | your.best.email@teste.com
-GitHub: https://github.com/ | LinkedIn: https://www.linkedin.com/
++55 (11) 94928-8027 | gabriel.dev.front@gmail.com
+GitHub: https://github.com/GabriellBarbosa | LinkedIn: https://www.linkedin.com/in/gabriel-barbosa-de-almeida-57b87b18a/?locale=en_US
 
 Summary
 Full Stack Developer since 2021, experienced in building scalable and user-centered solutions. Focused on performance, best practices, and seamless integration between front-end and back-end. Skilled in React, Next.js, NestJS, TypeORM, and PostgreSQL. Constantly seeking to grow as a software engineer by applying clean code principles and modern architecture.
@@ -12,7 +12,7 @@ Full Stack Developer since 2021, experienced in building scalable and user-cente
 Professional Experience
 --
 Elleve — Mid-Level Full Stack Developer
-Feb 2025 - Present | São Paulo, Brazil
+Feb 2025 - Nov 2025 | São Paulo, Brazil
 Implemented the payroll-loan simulation feature, integrating the system with financial APIs.
 Contributed to building a complete ecosystem of partner institution courses, working across the end-user platform and internal sales and offer management systems.
 Technologies: React, Next.js, NestJS, TypeORM, PostgreSQL, Docker, Python, FastAPI, TypeScript.
@@ -35,7 +35,7 @@ Aug 2021 - Dec 2023
 
 Languages
 --
-English: Advanced (C1)
+English: Intermidiate (B2)
 
 Technical Skills
 --
@@ -43,4 +43,4 @@ Front-end: React, Next.js, Angular, Material UI, Tailwind, TypeScript, Styled Co
 Back-end: Node.js, NestJS, Express, TypeORM, Python, FastAPI, TypeSense
 Databases: PostgreSQL, MySQL
 Tools: Docker, Git, Figma, OpenAI integration for LLM usage
-Methodologies: Clean Code, TDD`;
+Methodologies: Clean Code, Refactoring, TDD`;

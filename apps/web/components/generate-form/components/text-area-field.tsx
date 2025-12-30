@@ -27,6 +27,7 @@ export function TextAreaField({
       </Label>
       <Textarea
         id={field}
+        spellCheck={false}
         placeholder={placeholder}
         rows={rows}
         {...register(field)}
