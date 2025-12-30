@@ -8,6 +8,7 @@ import { Packer } from "docx";
 import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
 import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
+import { mapServerErrorToFriendlyMessage } from "@/utils/functions/map_server_error_to_friendly_message";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const MIN_CHAR_COUNT = 120;
@@ -97,34 +98,6 @@ export function useGenerateForm(): UseGenerateFormReturn {
     window.localStorage.setItem(PROFESSIONAL_INFO_STORAGE_KEY, candidateText);
   }, [candidateText]);
 
-  const mapServerErrorToFriendlyMessage = useCallback((message: string) => {
-    const normalized = message.toLowerCase();
-
-    if (normalized.includes("too short") || normalized.includes("minimum")) {
-      return "Os textos parecem curtos demais. Adicione mais contexto para que possamos personalizar melhor.";
-    }
-
-    if (normalized.includes("timeout")) {
-      return "A geração expirou. O servidor demorou para responder, tente novamente.";
-    }
-
-    if (normalized.includes("rate limit")) {
-      return "Geramos muitas solicitações em sequência. Aguarde alguns instantes e tente novamente.";
-    }
-
-    if (
-      normalized.includes("unauthorized") ||
-      normalized.includes("forbidden")
-    ) {
-      return "Sua sessão expirou. Atualize a página e tente novamente.";
-    }
-
-    return (
-      message ||
-      "Não conseguimos gerar agora. Verifique suas entradas ou tente novamente em breve."
-    );
-  }, []);
-
   const extractCompanyFromGreeting = useCallback((greeting: string) => {
     const match = greeting.match(/\b(?:at|da|do|de)\s+([^,]+)/i);
 
@@ -139,20 +112,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
     async (data: GenerateFormData) => {
       setError(null);
 
-      const trimmedCandidate = data.candidate_text.trim();
-      const trimmedJob = data.job_text.trim();
-
-      if (trimmedCandidate.length < MIN_CHAR_COUNT) {
-        setError(
-          "Precisamos de mais detalhes sobre você. Inclua conquistas, responsabilidades e resultados relevantes."
-        );
-        return;
-      }
-
-      if (trimmedJob.length < MIN_CHAR_COUNT) {
-        setError(
-          "O texto da vaga está muito curto. Adicione requisitos, responsabilidades ou contexto adicional."
-        );
+      if (!isInputValid(data.candidate_text, data.job_text)) {
         return;
       }
 
@@ -177,24 +137,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
         });
 
         if (!res.ok) {
-          let parsedError: unknown = null;
-
-          try {
-            parsedError = await res.json();
-          } catch {
-            throw new Error("Erro ao gerar conteúdo. Tente novamente.");
-          }
-
-          const errorMessage =
-            typeof parsedError === "object" &&
-            parsedError !== null &&
-            ("detail" in parsedError || "error" in parsedError)
-              ? String(
-                  (parsedError as { detail?: string }).detail ||
-                    (parsedError as { error?: string }).error
-                )
-              : "Erro ao gerar conteúdo. Tente novamente.";
-
+          const errorMessage = await getErrorMessageFromResponse(res);
           throw new Error(errorMessage);
         }
 
@@ -212,7 +155,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
           errorMessage === "The user aborted a request."
         ) {
           setError(
-            "Demorou mais do que o esperado. Verifique sua conexão ou tente novamente em instantes."
+            "It took longer than expected. Check your connection or try again in a few moments."
           );
           setStatusStep(null);
           return;
@@ -223,7 +166,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
           errorMessage.toLowerCase().includes("fetch")
         ) {
           setError(
-            "Não conseguimos falar com o servidor. Confirme sua conexão ou tente mais tarde."
+            "We were unable to communicate with the server. Please confirm your connection or try again later."
           );
           setStatusStep(null);
           return;
@@ -233,7 +176,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
           const message = mapServerErrorToFriendlyMessage(err.message);
           setError(message);
         } else {
-          setError("Ocorreu um erro inesperado. Por favor, tente novamente.");
+          setError("An unexpected error occurred. Please try again.");
         }
 
         setStatusStep(null);
@@ -246,6 +189,49 @@ export function useGenerateForm(): UseGenerateFormReturn {
     },
     [mapServerErrorToFriendlyMessage]
   );
+
+  const isInputValid = useCallback((candidateText: string, jobText: string) => {
+    const trimmedCandidate = candidateText.trim();
+    const trimmedJob = jobText.trim();
+
+    if (trimmedCandidate.length < MIN_CHAR_COUNT) {
+      setError(
+        "We need more details about you. Include achievements, responsibilities, and relevant results."
+      );
+      return false;
+    }
+
+    if (trimmedJob.length < MIN_CHAR_COUNT) {
+      setError(
+        "The job posting text is too short. Please add requirements, responsibilities, or additional context."
+      );
+      return false;
+    }
+
+    return true;
+  }, []);
+
+  const getErrorMessageFromResponse = useCallback(async (res: Response) => {
+    let parsedError: unknown = null;
+
+    try {
+      parsedError = await res.json();
+    } catch {
+      throw new Error("Error generating content. Please try again.");
+    }
+
+    const errorMessage =
+      typeof parsedError === "object" &&
+      parsedError !== null &&
+      ("detail" in parsedError || "error" in parsedError)
+        ? String(
+            (parsedError as { detail?: string }).detail ||
+              (parsedError as { error?: string }).error
+          )
+        : "Error generating content. Please try again.";
+
+    return errorMessage;
+  }, []);
 
   useEffect(() => {
     if (!isLoading) {
