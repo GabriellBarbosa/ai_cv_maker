@@ -9,6 +9,7 @@ import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
 import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
 import { mapServerErrorToFriendlyMessage } from "@/utils/functions/map_server_error_to_friendly_message";
+import { defaultProfessionalInfo } from "@/utils/constants/default_professional_info";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const MIN_CHAR_COUNT = 120;
@@ -61,7 +62,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(GenerateRequestSchema) as any,
     defaultValues: {
-      candidate_text: "",
+      candidate_text: defaultProfessionalInfo,
       job_text: "",
       language: "pt-BR",
       tone: "profissional",

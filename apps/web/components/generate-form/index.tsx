@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { professionalInfoPlaceholder } from "@/utils/constants/professional_info_placeholder";
 import { Loader2 } from "lucide-react";
 import { TextAreaField } from "./components/text-area-field";
 import { StatusCard } from "./components/status-card";
@@ -64,7 +63,7 @@ export function GenerateForm() {
             <TextAreaField
               field="candidate_text"
               label="Your professional info"
-              placeholder={professionalInfoPlaceholder}
+              placeholder="Add your professional info here"
               register={register}
               error={errors.candidate_text?.message}
             />
@@ -159,7 +158,9 @@ export function GenerateForm() {
           onDownloadResume={handleDownloadResumeDocx}
           onDownloadCoverLetter={handleDownloadCoverLetterDocx}
           canDownloadResume={Boolean(response.resume)}
-          canDownloadCoverLetter={Boolean(response.cover_letter && response.resume)}
+          canDownloadCoverLetter={Boolean(
+            response.cover_letter && response.resume
+          )}
         />
       )}
     </div>
