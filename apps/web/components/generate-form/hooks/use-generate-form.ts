@@ -55,7 +55,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
       { label: "Extracting requirements" },
       { label: "Generating content" },
     ],
-    []
+    [],
   );
 
   const form = useForm<GenerateFormData>({
@@ -80,7 +80,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
     if (typeof window === "undefined") return;
 
     const savedText = window.localStorage.getItem(
-      PROFESSIONAL_INFO_STORAGE_KEY
+      PROFESSIONAL_INFO_STORAGE_KEY,
     );
 
     if (savedText) {
@@ -126,7 +126,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
       try {
         setGeneratedLanguage(data.language);
         const controller = new AbortController();
-        timeoutId = window.setTimeout(() => controller.abort(), 90_000);
+        timeoutId = window.setTimeout(() => controller.abort(), 300_000);
 
         const res = await fetch(`${API_URL}/v1/generate`, {
           method: "POST",
@@ -156,7 +156,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
           errorMessage === "The user aborted a request."
         ) {
           setError(
-            "It took longer than expected. Check your connection or try again in a few moments."
+            "It took longer than expected. Check your connection or try again in a few moments.",
           );
           setStatusStep(null);
           return;
@@ -167,7 +167,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
           errorMessage.toLowerCase().includes("fetch")
         ) {
           setError(
-            "We were unable to communicate with the server. Please confirm your connection or try again later."
+            "We were unable to communicate with the server. Please confirm your connection or try again later.",
           );
           setStatusStep(null);
           return;
@@ -188,7 +188,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
         setIsLoading(false);
       }
     },
-    [mapServerErrorToFriendlyMessage]
+    [mapServerErrorToFriendlyMessage],
   );
 
   const isInputValid = useCallback((candidateText: string, jobText: string) => {
@@ -197,14 +197,14 @@ export function useGenerateForm(): UseGenerateFormReturn {
 
     if (trimmedCandidate.length < MIN_CHAR_COUNT) {
       setError(
-        "We need more details about you. Include achievements, responsibilities, and relevant results."
+        "We need more details about you. Include achievements, responsibilities, and relevant results.",
       );
       return false;
     }
 
     if (trimmedJob.length < MIN_CHAR_COUNT) {
       setError(
-        "The job posting text is too short. Please add requirements, responsibilities, or additional context."
+        "The job posting text is too short. Please add requirements, responsibilities, or additional context.",
       );
       return false;
     }
@@ -227,7 +227,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
       ("detail" in parsedError || "error" in parsedError)
         ? String(
             (parsedError as { detail?: string }).detail ||
-              (parsedError as { error?: string }).error
+              (parsedError as { error?: string }).error,
           )
         : "Error generating content. Please try again.";
 
@@ -274,7 +274,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
       setError(
         err instanceof Error
           ? `Failed to download resume: ${err.message}`
-          : "Failed to download resume"
+          : "Failed to download resume",
       );
     }
   }, [generatedLanguage, response]);
@@ -293,7 +293,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
           signature: coverLetter.signature,
           candidateName: resume.name,
           locale: generatedLanguage,
-        }
+        },
       );
 
       const doc = builder.build();
@@ -308,7 +308,7 @@ export function useGenerateForm(): UseGenerateFormReturn {
       setError(
         err instanceof Error
           ? `Failed to download cover letter: ${err.message}`
-          : "Failed to download cover letter"
+          : "Failed to download cover letter",
       );
     }
   }, [extractCompanyFromGreeting, generatedLanguage, response]);
