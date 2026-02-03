@@ -1,4 +1,4 @@
-import { GenerateForm } from "@/components/generate-form";
+import { GenerateForm } from "@/app/(home)/_components/generate-resume-form";
 
 export default function Home() {
   return (

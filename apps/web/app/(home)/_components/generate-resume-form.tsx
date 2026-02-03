@@ -17,11 +17,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { TextAreaField } from "./components/text-area-field";
-import { StatusCard } from "./components/status-card";
-import { ErrorCard } from "./components/error-card";
-import { ResultCard } from "./components/result-card";
-import { useGenerateForm } from "./hooks/use-generate-form";
+import { TextAreaField } from "./text-area-field";
+import { StatusCard } from "./status-card";
+import { ErrorCard } from "./error-card";
+import { ResultCard } from "./result-card";
+import { useGenerateForm } from "../_hooks/use-generate-form";
 
 export function GenerateForm() {
   const {

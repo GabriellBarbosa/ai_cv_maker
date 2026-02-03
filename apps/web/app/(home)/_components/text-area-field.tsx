@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { UseFormRegister } from "react-hook-form";
-import type { GenerateFormData } from "../hooks/use-generate-form";
+import type { GenerateFormData } from "../_hooks/use-generate-form";
 
 type TextAreaFieldProps = {
   field: Extract<keyof GenerateFormData, string>;
