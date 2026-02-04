@@ -1,61 +1,57 @@
 import { z } from "zod";
 
-const YYYY_MM_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
-
-const yyyymm = z
-  .string()
-  .regex(YYYY_MM_REGEX, "Expected format YYYY-MM (e.g. 2026-02)");
-
-const nullableString = z.string().nullable();
-
 export const CandidateSchema = z.object({
-  name: z.string().min(1),
-  professional_title: z.string().min(1),
-  candidate_introduction: z.string().min(1),
+  name: z.string(),
+  professional_title: z.string(),
+  candidate_introduction: z.string(),
 
   contact_information: z.object({
-    email: nullableString,
-    phone: nullableString,
-    location: nullableString,
+    email: z.string(),
+    phone: z.string(),
+    location: z.string(),
   }),
 
   external_links: z
     .array(
       z.object({
-        label: z.string().min(1),
+        label: z.string(),
         url: z.string().url(),
       }),
     )
     .optional(),
 
-  experiences: z.array(
-    z.object({
-      company: z.string().min(1),
-      role: z.string().min(1),
-      start_date: yyyymm,
-      end_date: z.union([yyyymm, z.literal("Present")]),
-      location: z.string().min(1),
+  experiences: z
+    .array(
+      z.object({
+        company: z.string(),
+        role: z.string(),
+        start_date: z.string(),
+        end_date: z.string(),
+        location: z.string(),
 
-      bullets: z.array(z.string().min(1)).min(1),
-      soft_skills: z.array(z.string().min(1)).default([]),
-      hard_skills: z.array(z.string().min(1)).default([]),
-    }),
-  ),
+        bullets: z.array(z.string()),
+        soft_skills: z.array(z.string()),
+        hard_skills: z.array(z.string()),
+      }),
+    )
+    .optional(),
 
-  education: z.array(
-    z.object({
-      institution: z.string().min(1),
-      degree: z.string().min(1),
-      start_date: yyyymm,
-      end_date: yyyymm,
-    }),
-  ),
+  education: z
+    .array(
+      z.object({
+        institution: z.string(),
+        degree: z.string(),
+        start_date: z.string(),
+        end_date: z.string(),
+      }),
+    )
+    .optional(),
 
   languages: z
     .array(
       z.object({
-        name: z.string().min(1),
-        level: z.enum(["A2", "B1", "B2", "C1", "C2", "Native"]),
+        name: z.string(),
+        level: z.string(),
       }),
     )
     .optional(),

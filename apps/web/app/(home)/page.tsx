@@ -1,14 +1,15 @@
 import { GenerateForm } from "@/app/(home)/_components/generate-resume-form";
+import { ProfessionalInfoForm } from "./_components/professional-info-form";
 
 export default function Home() {
   return (
     <div>
       <main className="container mx-auto pb-24 pt-20 grid gap-10 lg:items-start lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-        <section id="generate" className="px-6 lg:sticky lg:top-20 lg:self-start">
+        <section
+          id="generate"
+          className="px-6 lg:sticky lg:top-20 lg:self-start"
+        >
           <div className="flex flex-col gap-6">
-            <span className="inline-flex w-fit items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              Start now
-            </span>
             <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
               Bring your experience and let AI handle the rest.
             </h2>
@@ -35,6 +36,7 @@ export default function Home() {
           </div>
         </section>
         <section id="generate" className="lg:px-6">
+          <ProfessionalInfoForm />
           <GenerateForm />
         </section>
       </main>
