@@ -8,7 +8,8 @@ export const CandidateSchema = z.object({
   contact_information: z.object({
     email: z.string(),
     phone: z.string(),
-    location: z.string(),
+    state: z.string(),
+    city: z.string(),
   }),
 
   external_links: z
@@ -27,9 +28,8 @@ export const CandidateSchema = z.object({
         role: z.string(),
         start_date: z.string(),
         end_date: z.string(),
-        location: z.string(),
-
-        bullets: z.array(z.string()),
+        current_job: z.boolean(),
+        description: z.string(),
         soft_skills: z.array(z.string()),
         hard_skills: z.array(z.string()),
       }),
@@ -41,6 +41,7 @@ export const CandidateSchema = z.object({
       z.object({
         institution: z.string(),
         degree: z.string(),
+        in_progress: z.boolean(),
         start_date: z.string(),
         end_date: z.string(),
       }),

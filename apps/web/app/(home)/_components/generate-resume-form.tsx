@@ -49,7 +49,7 @@ export function GenerateForm() {
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <Card className="border border-border/70 bg-gradient-to-b from-card/90 via-card/80 to-card/70 shadow-xl backdrop-blur">
+        <Card>
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-semibold">
               Generate your application kit
