@@ -72,17 +72,16 @@ export function ProfessionalInfoForm() {
       <Card>
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-semibold">
-            Your professional info
+            Seu perfil profissional
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
             <Field>
-              <FieldLabel htmlFor="name">Full name</FieldLabel>
+              <FieldLabel htmlFor="name">Nome completo</FieldLabel>
               <Input
                 id="name"
                 type="text"
-                placeholder="Gabriel Barbosa de Almeida"
                 {...register("name", {
                   required: true,
                 })}
@@ -90,12 +89,11 @@ export function ProfessionalInfoForm() {
             </Field>
             <Field>
               <FieldLabel htmlFor="professional_title">
-                Professional title
+                Cargo profissional
               </FieldLabel>
               <Input
                 id="professional_title"
                 type="text"
-                placeholder="Full Stack developer"
                 {...register("professional_title", {
                   required: true,
                 })}
@@ -109,18 +107,16 @@ export function ProfessionalInfoForm() {
               <Input
                 id="email"
                 type="text"
-                placeholder="gabriel.dev.front@gmail.com"
                 {...register("contact_information.email", {
                   required: true,
                 })}
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="phone">Phone number</FieldLabel>
+              <FieldLabel htmlFor="phone">Celular</FieldLabel>
               <Input
                 id="phone"
                 type="text"
-                placeholder="+55 11 94928 8027"
                 {...register("contact_information.phone", {
                   required: true,
                 })}
@@ -130,22 +126,20 @@ export function ProfessionalInfoForm() {
 
           <div className="flex gap-y-6 gap-x-4 flex-row">
             <Field>
-              <FieldLabel htmlFor="state">State</FieldLabel>
+              <FieldLabel htmlFor="state">Estado</FieldLabel>
               <Input
                 id="state"
                 type="text"
-                placeholder="São Paulo"
                 {...register("contact_information.state", {
                   required: true,
                 })}
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="city">City</FieldLabel>
+              <FieldLabel htmlFor="city">Cidade</FieldLabel>
               <Input
                 id="city"
                 type="text"
-                placeholder="SP"
                 {...register("contact_information.city", {
                   required: true,
                 })}
@@ -154,11 +148,12 @@ export function ProfessionalInfoForm() {
           </div>
           <Field>
             <FieldLabel htmlFor="candidate_introduction">
-              Introduce yourself
+              Apresente-se
             </FieldLabel>
             <Textarea
               id="candidate_introduction"
-              placeholder="Full-stack developer since 2021, focused on building scalable, user-centric web applications. Experienced with React, Next.js, NestJS, TypeORM, and PostgreSQL, with a strong emphasis on performance, clean code, and modern architecture."
+              rows={4}
+              placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
               {...register("candidate_introduction", { required: true })}
             />
           </Field>
@@ -167,10 +162,7 @@ export function ProfessionalInfoForm() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
-                  <Label>External Links</Label>
-                  <p className="text-sm text-muted-foreground">
-                    LinkedIn, Portfolio, etc.
-                  </p>
+                  <Label>LinkedIn, portfólio e outros links</Label>
                 </div>
                 <Button
                   type="button"
@@ -186,18 +178,18 @@ export function ProfessionalInfoForm() {
               <div className="space-y-6">
                 {!externalLinks?.length && (
                   <p className="text-base text-muted-foreground md:text-lg">
-                    Click the plus button to add useful links like your
-                    LinkedIn, Portfolio website, etc.
+                    Adicione links úteis como seu LinkedIn, site de portfólio,
+                    etc.
                   </p>
                 )}
 
                 {externalLinks?.map((field, index) => (
                   <div className="flex gap-4 items-center" key={field.id}>
                     <Field>
-                      {index === 0 && <FieldLabel>Label</FieldLabel>}
+                      {index === 0 && <FieldLabel>Nome</FieldLabel>}
                       <Input
                         type="text"
-                        placeholder="LinkedIn"
+                        placeholder="Ex.: LinkedIn"
                         {...register(`external_links.${index}.label`)}
                       />
                     </Field>
@@ -205,7 +197,6 @@ export function ProfessionalInfoForm() {
                       {index === 0 && <FieldLabel>URL</FieldLabel>}
                       <Input
                         type="text"
-                        placeholder="https://www.linkedin.com/in/gabriel-barbosa-de-almeida-57b87b18a/"
                         {...register(`external_links.${index}.url`)}
                       />
                     </Field>
@@ -228,7 +219,7 @@ export function ProfessionalInfoForm() {
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <Label>Professional Experiences</Label>
+                <Label>Experiências profissionais</Label>
                 <Button
                   type="button"
                   size="icon"
@@ -255,7 +246,7 @@ export function ProfessionalInfoForm() {
               <div className="space-y-6">
                 {!experiences?.length && (
                   <p className="text-base text-muted-foreground md:text-lg">
-                    Click the plus button to add a professional experience.
+                    Adicione uma experiência profissional.
                   </p>
                 )}
 
@@ -263,9 +254,9 @@ export function ProfessionalInfoForm() {
                   <div className="flex-1 space-y-4" key={field.id}>
                     <div className="flex items-center justify-between">
                       <p className="font-bold">
-                        Experience{" "}
+                        Experiência{" "}
                         {experiences.length > 1
-                          ? `${index + 1} of ${experiences.length}`
+                          ? `${index + 1} de ${experiences.length}`
                           : ``}
                       </p>
                       <Button
@@ -280,36 +271,47 @@ export function ProfessionalInfoForm() {
                       </Button>
                     </div>
                     <Field>
-                      <FieldLabel>Role</FieldLabel>
+                      <FieldLabel htmlFor={`experiences.${index}.role`}>
+                        Cargo
+                      </FieldLabel>
                       <Input
+                        id={`experiences.${index}.role`}
                         type="text"
-                        placeholder="Full Stack developer"
                         {...register(`experiences.${index}.role`)}
                       />
                     </Field>
                     <Field>
-                      <FieldLabel>Company</FieldLabel>
+                      <FieldLabel htmlFor={`experiences.${index}.company`}>
+                        Empresa
+                      </FieldLabel>
                       <Input
+                        id={`experiences.${index}.company`}
                         type="text"
-                        placeholder="Elleve"
                         {...register(`experiences.${index}.company`)}
                       />
                     </Field>
                     <Field>
-                      <FieldLabel>Description</FieldLabel>
+                      <FieldLabel htmlFor={`experiences.${index}.description`}>
+                        Descrição de atividades
+                      </FieldLabel>
                       <Textarea
-                        placeholder="Implementei a funcionalidade de simulação de crédito consignado, integrando o sistema com APIs financeiras..."
-                        {...register("candidate_introduction", {
+                        id={`experiences.${index}.description`}
+                        rows={4}
+                        placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
+                        {...register(`experiences.${index}.description`, {
                           required: true,
                         })}
                       />
                     </Field>
                     <div className="flex gap-4 items-start">
                       <Field>
-                        <FieldLabel>Start date</FieldLabel>
+                        <FieldLabel htmlFor={`experiences.${index}.start_date`}>
+                          Data de início
+                        </FieldLabel>
                         <Input
+                          id={`experiences.${index}.start_date`}
                           type="text"
-                          placeholder="02/2025"
+                          placeholder="Ex.: 02/2026"
                           {...register(`experiences.${index}.start_date`)}
                           onChange={(e) =>
                             setValue(
@@ -322,14 +324,17 @@ export function ProfessionalInfoForm() {
 
                       <div className="w-full space-y-2">
                         <Field>
-                          <FieldLabel>End date</FieldLabel>
+                          <FieldLabel htmlFor={`experiences.${index}.end_date`}>
+                            Data de término
+                          </FieldLabel>
                           <Input
+                            id={`experiences.${index}.end_date`}
                             type="text"
-                            placeholder="11/2025"
-                            {...register(`experiences.${index}.start_date`)}
+                            placeholder="Ex.: 02/2026"
+                            {...register(`experiences.${index}.end_date`)}
                             onChange={(e) =>
                               setValue(
-                                `experiences.${index}.start_date`,
+                                `experiences.${index}.end_date`,
                                 formatMonthYear(e.target.value),
                               )
                             }
@@ -349,7 +354,7 @@ export function ProfessionalInfoForm() {
                           <FieldLabel
                             htmlFor={`experiences.${index}.current_job`}
                           >
-                            This is my current job
+                            Este é meu trabalho atual
                           </FieldLabel>
                         </Field>
                       </div>
@@ -363,7 +368,7 @@ export function ProfessionalInfoForm() {
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <Label>Education</Label>
+                <Label>Formação Acadêmica</Label>
                 <Button
                   type="button"
                   size="icon"
@@ -387,7 +392,7 @@ export function ProfessionalInfoForm() {
               <div className="space-y-6">
                 {!education?.length && (
                   <p className="text-base text-muted-foreground md:text-lg">
-                    Click the plus button to add an education entry.
+                    Adicione uma formação acadêmica.
                   </p>
                 )}
 
@@ -395,9 +400,9 @@ export function ProfessionalInfoForm() {
                   <div className="flex-1 space-y-4" key={field.id}>
                     <div className="flex items-center justify-between">
                       <p className="font-bold">
-                        Education entry{" "}
+                        Formação{" "}
                         {education.length > 1
-                          ? `${index + 1} of ${education.length}`
+                          ? `${index + 1} de ${education.length}`
                           : ``}
                       </p>
                       <Button
@@ -412,27 +417,34 @@ export function ProfessionalInfoForm() {
                       </Button>
                     </div>
                     <Field>
-                      <FieldLabel>Degree</FieldLabel>
+                      <FieldLabel htmlFor={`education.${index}.degree`}>
+                        Formação
+                      </FieldLabel>
                       <Input
+                        id={`education.${index}.degree`}
                         type="text"
-                        placeholder="system analysis and development"
                         {...register(`education.${index}.degree`)}
                       />
                     </Field>
                     <Field>
-                      <FieldLabel>Institution</FieldLabel>
+                      <FieldLabel htmlFor={`education.${index}.institution`}>
+                        Instituição de ensino
+                      </FieldLabel>
                       <Input
+                        id={`education.${index}.institution`}
                         type="text"
-                        placeholder="Universidade Anhembi Morumbi"
                         {...register(`education.${index}.institution`)}
                       />
                     </Field>
                     <div className="flex gap-4 items-start">
                       <Field>
-                        <FieldLabel>Start date</FieldLabel>
+                        <FieldLabel htmlFor={`education.${index}.start_date`}>
+                          Data de início
+                        </FieldLabel>
                         <Input
+                          id={`education.${index}.start_date`}
                           type="text"
-                          placeholder="02/2025"
+                          placeholder="Ex.: 02/2026"
                           {...register(`education.${index}.start_date`)}
                           onChange={(e) =>
                             setValue(
@@ -445,10 +457,13 @@ export function ProfessionalInfoForm() {
 
                       <div className="w-full space-y-2">
                         <Field>
-                          <FieldLabel>End date</FieldLabel>
+                          <FieldLabel htmlFor={`education.${index}.end_date`}>
+                            Data de término
+                          </FieldLabel>
                           <Input
+                            id={`education.${index}.end_date`}
                             type="text"
-                            placeholder="11/2025"
+                            placeholder="Ex.: 02/2026"
                             {...register(`education.${index}.end_date`)}
                             onChange={(e) =>
                               setValue(
@@ -472,7 +487,7 @@ export function ProfessionalInfoForm() {
                           <FieldLabel
                             htmlFor={`education.${index}.in_progress`}
                           >
-                            In progress
+                            Em andamento
                           </FieldLabel>
                         </Field>
                       </div>
@@ -487,7 +502,7 @@ export function ProfessionalInfoForm() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
-                  <Label>Languages</Label>
+                  <Label>Idiomas</Label>
                 </div>
                 <Button
                   type="button"
@@ -503,22 +518,22 @@ export function ProfessionalInfoForm() {
               <div className="space-y-6">
                 {!languages?.length && (
                   <p className="text-base text-muted-foreground md:text-lg">
-                    Click the plus button to add the languages that you speak.
+                    Adicione os idiomas que você fala.
                   </p>
                 )}
 
                 {languages?.map((field, index) => (
                   <div className="flex gap-4 items-center" key={field.id}>
                     <Field>
-                      {index === 0 && <FieldLabel>Language</FieldLabel>}
+                      {index === 0 && <FieldLabel>Idioma</FieldLabel>}
                       <Input
                         type="text"
-                        placeholder="English"
+                        placeholder="Ex.: English"
                         {...register(`languages.${index}.name`)}
                       />
                     </Field>
                     <Field>
-                      {index === 0 && <FieldLabel>Level</FieldLabel>}
+                      {index === 0 && <FieldLabel>Nível</FieldLabel>}
                       <Controller
                         name={`languages.${index}.level`}
                         control={control}
@@ -529,15 +544,15 @@ export function ProfessionalInfoForm() {
                             defaultValue={field.value}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a level" />
+                              <SelectValue placeholder="Selecione o nível" />
                             </SelectTrigger>
 
                             <SelectContent>
-                              <SelectItem value="beginner">Beginner</SelectItem>
+                              <SelectItem value="beginner">Iniciante</SelectItem>
                               <SelectItem value="intermediate">
-                                Intermediate
+                                Intermediário
                               </SelectItem>
-                              <SelectItem value="advanced">Advanced</SelectItem>
+                              <SelectItem value="advanced">Avançado</SelectItem>
                             </SelectContent>
                           </Select>
                         )}

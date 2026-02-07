@@ -9,19 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { TextAreaField } from "./text-area-field";
 import { StatusCard } from "./status-card";
 import { ErrorCard } from "./error-card";
 import { ResultCard } from "./result-card";
 import { useGenerateForm } from "../_hooks/use-generate-form";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
 
 export function GenerateForm() {
   const {
@@ -52,34 +47,34 @@ export function GenerateForm() {
         <Card>
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-semibold">
-              Generate your application kit
+              Gere seu kit de candidatura.
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Share your story, paste the role, and let our AI draft a resume
-              and cover letter that feel unmistakably yours.
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <TextAreaField
-              field="candidate_text"
-              label="Your professional info"
-              placeholder="Add your professional info here"
-              register={register}
-              error={errors.candidate_text?.message}
-            />
-
-            <TextAreaField
-              field="job_text"
-              label="Job description"
-              placeholder="The information about the job. The more context you add, the sharper the match."
-              register={register}
-              error={errors.job_text?.message}
-            />
+            <Field className="space-y-3">
+              <FieldLabel htmlFor="job_text">Descrição da vaga</FieldLabel>
+              <Textarea
+                id="job_text"
+                spellCheck={false}
+                placeholder="As informações sobre a vaga. Quanto mais contexto você adicionar, melhor será o alinhamento."
+                {...register("job_text")}
+                className={`min-h-[180px] resize-y ${
+                  error
+                    ? "border-destructive/70 focus-visible:ring-destructive/70"
+                    : ""
+                }`}
+              />
+              {errors.job_text?.message && (
+                <p className="text-sm text-destructive">
+                  {errors.job_text?.message}
+                </p>
+              )}
+            </Field>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 <Label className="mb-2 block" htmlFor="language">
-                  Language
+                  Idioma para geração do currículo
                 </Label>
                 <Select
                   value={language}
@@ -87,10 +82,7 @@ export function GenerateForm() {
                     setValue("language", value as "pt-BR" | "en-US")
                   }
                 >
-                  <SelectTrigger
-                    id="language"
-                    className="border-2 border-gray-600 bg-background/70"
-                  >
+                  <SelectTrigger id="language">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent className="border border-2 border-gray-600 bg-card">
@@ -102,27 +94,24 @@ export function GenerateForm() {
 
               <div className="space-y-3">
                 <Label className="mb-2 block" htmlFor="tone">
-                  Tone
+                  Tom
                 </Label>
                 <Select
                   value={tone}
                   onValueChange={(value) =>
                     setValue(
                       "tone",
-                      value as "profissional" | "neutro" | "criativo"
+                      value as "profissional" | "neutro" | "criativo",
                     )
                   }
                 >
-                  <SelectTrigger
-                    id="tone"
-                    className="border-2 border-gray-600 bg-background/70"
-                  >
+                  <SelectTrigger id="tone">
                     <SelectValue placeholder="Select tone" />
                   </SelectTrigger>
                   <SelectContent className="border border-2 border-gray-600 bg-card">
-                    <SelectItem value="profissional">Professional</SelectItem>
-                    <SelectItem value="neutro">Neutral</SelectItem>
-                    <SelectItem value="criativo">Creative</SelectItem>
+                    <SelectItem value="profissional">Profissional</SelectItem>
+                    <SelectItem value="neutro">Neutro</SelectItem>
+                    <SelectItem value="criativo">Criativo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -140,7 +129,7 @@ export function GenerateForm() {
                   Gerando...
                 </span>
               ) : (
-                "Generate resume & cover letter"
+                "Gerar currículo e carta de apresentação"
               )}
             </Button>
           </CardContent>
@@ -159,7 +148,7 @@ export function GenerateForm() {
           onDownloadCoverLetter={handleDownloadCoverLetterDocx}
           canDownloadResume={Boolean(response.resume)}
           canDownloadCoverLetter={Boolean(
-            response.cover_letter && response.resume
+            response.cover_letter && response.resume,
           )}
         />
       )}

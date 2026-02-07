@@ -11,31 +11,30 @@ export default function Home() {
         >
           <div className="flex flex-col gap-6">
             <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Bring your experience and let AI handle the rest.
+              Traga sua experiência e deixe que a IA cuide do resto.
             </h2>
             <p className="text-base text-muted-foreground md:text-lg">
-              Add your background, paste the job description, choose your
-              preferred language or tone, and receive a polished CV plus cover
-              letter in under a minute.
+              Conte sua história, cole descrição da vaga e deixe nossa IA criar
+              um currículo e uma carta de apresentação com a sua cara.
             </p>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Personalize tone and format without leaving the flow.
+                Personalize o tom e o formato.
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Download your polished resume under a minute.
+                Baixe seu currículo impecável em menos de um minuto.
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Designed for clarity in dark environments and late-night prep
-                sessions.
+                Projetado para proporcionar clareza em ambientes escuros e
+                sessões de preparação noturnas.
               </li>
             </ul>
           </div>
         </section>
-        <section id="generate" className="lg:px-6">
+        <section id="generate" className="lg:px-6 space-y-6">
           <ProfessionalInfoForm />
           <GenerateForm />
         </section>

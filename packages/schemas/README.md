@@ -30,7 +30,7 @@ Used for making requests to the AI generation API.
 The complete resume structure returned by the API.
 
 **Fields:**
-- `name` (string, required): Candidate's full name
+- `name` (string, required): Candidate's Nome completo
 - `job_title` (string, required): Current or desired job title
 - `candidate_introduction` (string, required): Professional summary/introduction
 - `experiences` (array, required): List of professional experiences (min 1)
