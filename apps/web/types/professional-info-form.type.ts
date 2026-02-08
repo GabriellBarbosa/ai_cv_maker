@@ -4,7 +4,7 @@ export const CandidateSchema = z.object({
   name: z.string(),
   professional_title: z.string(),
   candidate_introduction: z.string(),
-
+  skills: z.array(z.string()),
   contact_information: z.object({
     email: z.string(),
     phone: z.string(),
@@ -30,8 +30,7 @@ export const CandidateSchema = z.object({
         end_date: z.string(),
         current_job: z.boolean(),
         description: z.string(),
-        soft_skills: z.array(z.string()),
-        hard_skills: z.array(z.string()),
+        skills: z.array(z.string()),
       }),
     )
     .optional(),

@@ -74,7 +74,7 @@ export function GenerateForm() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 <Label className="mb-2 block" htmlFor="language">
-                  Idioma para geração do currículo
+                  Idioma do currículo
                 </Label>
                 <Select
                   value={language}

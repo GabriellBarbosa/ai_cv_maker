@@ -8,7 +8,12 @@ import {
   CandidateSchema,
 } from "@/types/professional-info-form.type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import {
+  Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PlusIcon, Trash } from "lucide-react";
@@ -22,14 +27,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TagsInput } from "./input-tag";
 
 export function ProfessionalInfoForm() {
-  const { register, control, setValue, watch } = useForm<Candidate>({
+  const form = useForm<Candidate>({
     resolver: zodResolver(CandidateSchema),
     defaultValues: {
       languages: [],
     },
   });
+
+  const { register, control, setValue, watch } = form;
 
   const {
     fields: externalLinks,
@@ -67,514 +75,549 @@ export function ProfessionalInfoForm() {
     name: "languages",
   });
 
+  console.log(watch());
+
   return (
-    <form>
-      <Card>
-        <CardHeader className="space-y-3">
-          <CardTitle className="text-2xl font-semibold">
-            Seu perfil profissional
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
+    <FormProvider {...form}>
+      <form>
+        <Card>
+          <CardHeader className="space-y-3">
+            <CardTitle className="text-2xl font-semibold">
+              Seu perfil profissional
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
+              <Field>
+                <FieldLabel htmlFor="name">Nome completo</FieldLabel>
+                <Input
+                  id="name"
+                  type="text"
+                  {...register("name", {
+                    required: true,
+                  })}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="professional_title">
+                  Cargo profissional
+                </FieldLabel>
+                <Input
+                  id="professional_title"
+                  type="text"
+                  {...register("professional_title", {
+                    required: true,
+                  })}
+                />
+              </Field>
+            </div>
+
+            <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
+              <Field>
+                <FieldLabel htmlFor="email">E-mail</FieldLabel>
+                <Input
+                  id="email"
+                  type="text"
+                  {...register("contact_information.email", {
+                    required: true,
+                  })}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="phone">Celular</FieldLabel>
+                <Input
+                  id="phone"
+                  type="text"
+                  {...register("contact_information.phone", {
+                    required: true,
+                  })}
+                />
+              </Field>
+            </div>
+
+            <div className="flex gap-y-6 gap-x-4 flex-row">
+              <Field>
+                <FieldLabel htmlFor="state">Estado</FieldLabel>
+                <Input
+                  id="state"
+                  type="text"
+                  {...register("contact_information.state", {
+                    required: true,
+                  })}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="city">Cidade</FieldLabel>
+                <Input
+                  id="city"
+                  type="text"
+                  {...register("contact_information.city", {
+                    required: true,
+                  })}
+                />
+              </Field>
+            </div>
             <Field>
-              <FieldLabel htmlFor="name">Nome completo</FieldLabel>
-              <Input
-                id="name"
-                type="text"
-                {...register("name", {
-                  required: true,
-                })}
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="professional_title">
-                Cargo profissional
+              <FieldLabel htmlFor="candidate_introduction">
+                Apresente-se
               </FieldLabel>
-              <Input
-                id="professional_title"
-                type="text"
-                {...register("professional_title", {
-                  required: true,
-                })}
+              <Textarea
+                id="candidate_introduction"
+                rows={4}
+                placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
+                {...register("candidate_introduction", { required: true })}
               />
             </Field>
-          </div>
 
-          <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
             <Field>
-              <FieldLabel htmlFor="email">E-mail</FieldLabel>
-              <Input
-                id="email"
-                type="text"
-                {...register("contact_information.email", {
-                  required: true,
-                })}
+              <FieldLabel htmlFor={`skills`}>Habilidades</FieldLabel>
+              <TagsInput
+                name={`skills`}
+                placeholder="Ex.: React, NestJS, PostgreSQL (Enter para adicionar)"
+                maxTags={20}
               />
             </Field>
-            <Field>
-              <FieldLabel htmlFor="phone">Celular</FieldLabel>
-              <Input
-                id="phone"
-                type="text"
-                {...register("contact_information.phone", {
-                  required: true,
-                })}
-              />
-            </Field>
-          </div>
 
-          <div className="flex gap-y-6 gap-x-4 flex-row">
-            <Field>
-              <FieldLabel htmlFor="state">Estado</FieldLabel>
-              <Input
-                id="state"
-                type="text"
-                {...register("contact_information.state", {
-                  required: true,
-                })}
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="city">Cidade</FieldLabel>
-              <Input
-                id="city"
-                type="text"
-                {...register("contact_information.city", {
-                  required: true,
-                })}
-              />
-            </Field>
-          </div>
-          <Field>
-            <FieldLabel htmlFor="candidate_introduction">
-              Apresente-se
-            </FieldLabel>
-            <Textarea
-              id="candidate_introduction"
-              rows={4}
-              placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
-              {...register("candidate_introduction", { required: true })}
-            />
-          </Field>
-
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <Label>LinkedIn, portfólio e outros links</Label>
-                </div>
-                <Button
-                  type="button"
-                  size="icon"
-                  aria-label="Add external link"
-                  onClick={() => insertExternalLink(0, { label: "", url: "" })}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {!externalLinks?.length && (
-                  <p className="text-base text-muted-foreground md:text-lg">
-                    Adicione links úteis como seu LinkedIn, site de portfólio,
-                    etc.
-                  </p>
-                )}
-
-                {externalLinks?.map((field, index) => (
-                  <div className="flex gap-4 items-center" key={field.id}>
-                    <Field>
-                      {index === 0 && <FieldLabel>Nome</FieldLabel>}
-                      <Input
-                        type="text"
-                        placeholder="Ex.: LinkedIn"
-                        {...register(`external_links.${index}.label`)}
-                      />
-                    </Field>
-                    <Field>
-                      {index === 0 && <FieldLabel>URL</FieldLabel>}
-                      <Input
-                        type="text"
-                        {...register(`external_links.${index}.url`)}
-                      />
-                    </Field>
-                    <Button
-                      type="button"
-                      className="self-end rounded-full"
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Add external link"
-                      onClick={() => removeExternalLink(index)}
-                    >
-                      <Trash className="text-red-500" />
-                    </Button>
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <Label>LinkedIn, portfólio e outros links</Label>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <Button
+                    type="button"
+                    size="icon"
+                    aria-label="Add external link"
+                    onClick={() =>
+                      insertExternalLink(0, { label: "", url: "" })
+                    }
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {!externalLinks?.length && (
+                    <p className="text-base text-muted-foreground md:text-lg">
+                      Adicione links úteis como seu LinkedIn, site de portfólio,
+                      etc.
+                    </p>
+                  )}
 
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <Label>Experiências profissionais</Label>
-                <Button
-                  type="button"
-                  size="icon"
-                  aria-label="Add external link"
-                  onClick={() =>
-                    insertExperience(0, {
-                      role: "",
-                      company: "",
-                      start_date: "",
-                      end_date: "",
-                      current_job: false,
-                      description: "",
-                      soft_skills: [],
-                      hard_skills: [],
-                    })
-                  }
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              <div className="space-y-6">
-                {!experiences?.length && (
-                  <p className="text-base text-muted-foreground md:text-lg">
-                    Adicione uma experiência profissional.
-                  </p>
-                )}
-
-                {experiences?.map((field, index) => (
-                  <div className="flex-1 space-y-4" key={field.id}>
-                    <div className="flex items-center justify-between">
-                      <p className="font-bold">
-                        Experiência{" "}
-                        {experiences.length > 1
-                          ? `${index + 1} de ${experiences.length}`
-                          : ``}
-                      </p>
+                  {externalLinks?.map((field, index) => (
+                    <div className="flex gap-4 items-center" key={field.id}>
+                      <Field>
+                        {index === 0 && <FieldLabel>Nome</FieldLabel>}
+                        <Input
+                          type="text"
+                          placeholder="Ex.: LinkedIn"
+                          {...register(`external_links.${index}.label`)}
+                        />
+                      </Field>
+                      <Field>
+                        {index === 0 && <FieldLabel>URL</FieldLabel>}
+                        <Input
+                          type="text"
+                          {...register(`external_links.${index}.url`)}
+                        />
+                      </Field>
                       <Button
                         type="button"
                         className="self-end rounded-full"
                         variant="ghost"
                         size="icon"
                         aria-label="Add external link"
-                        onClick={() => removeExperience(index)}
+                        onClick={() => removeExternalLink(index)}
                       >
                         <Trash className="text-red-500" />
                       </Button>
                     </div>
-                    <Field>
-                      <FieldLabel htmlFor={`experiences.${index}.role`}>
-                        Cargo
-                      </FieldLabel>
-                      <Input
-                        id={`experiences.${index}.role`}
-                        type="text"
-                        {...register(`experiences.${index}.role`)}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor={`experiences.${index}.company`}>
-                        Empresa
-                      </FieldLabel>
-                      <Input
-                        id={`experiences.${index}.company`}
-                        type="text"
-                        {...register(`experiences.${index}.company`)}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor={`experiences.${index}.description`}>
-                        Descrição de atividades
-                      </FieldLabel>
-                      <Textarea
-                        id={`experiences.${index}.description`}
-                        rows={4}
-                        placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
-                        {...register(`experiences.${index}.description`, {
-                          required: true,
-                        })}
-                      />
-                    </Field>
-                    <div className="flex gap-4 items-start">
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <Label>Experiências profissionais</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    aria-label="Add external link"
+                    onClick={() =>
+                      insertExperience(0, {
+                        role: "",
+                        company: "",
+                        start_date: "",
+                        end_date: "",
+                        current_job: false,
+                        description: "",
+                        skills: [],
+                      })
+                    }
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent>
+                <div className="space-y-6">
+                  {!experiences?.length && (
+                    <p className="text-base text-muted-foreground md:text-lg">
+                      Adicione uma experiência profissional.
+                    </p>
+                  )}
+
+                  {experiences?.map((field, index) => (
+                    <div className="flex-1 space-y-4" key={field.id}>
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold">
+                          Experiência{" "}
+                          {experiences.length > 1
+                            ? `${index + 1} de ${experiences.length}`
+                            : ``}
+                        </p>
+                        <Button
+                          type="button"
+                          className="self-end rounded-full"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Add external link"
+                          onClick={() => removeExperience(index)}
+                        >
+                          <Trash className="text-red-500" />
+                        </Button>
+                      </div>
                       <Field>
-                        <FieldLabel htmlFor={`experiences.${index}.start_date`}>
-                          Data de início
+                        <FieldLabel htmlFor={`experiences.${index}.role`}>
+                          Cargo
                         </FieldLabel>
                         <Input
-                          id={`experiences.${index}.start_date`}
+                          id={`experiences.${index}.role`}
                           type="text"
-                          placeholder="Ex.: 02/2026"
-                          {...register(`experiences.${index}.start_date`)}
-                          onChange={(e) =>
-                            setValue(
-                              `experiences.${index}.start_date`,
-                              formatMonthYear(e.target.value),
-                            )
-                          }
+                          {...register(`experiences.${index}.role`)}
+                        />
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor={`experiences.${index}.company`}>
+                          Empresa
+                        </FieldLabel>
+                        <Input
+                          id={`experiences.${index}.company`}
+                          type="text"
+                          {...register(`experiences.${index}.company`)}
+                        />
+                      </Field>
+                      <Field>
+                        <FieldLabel
+                          htmlFor={`experiences.${index}.description`}
+                        >
+                          Descrição de atividades
+                        </FieldLabel>
+                        <Textarea
+                          id={`experiences.${index}.description`}
+                          rows={4}
+                          placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
+                          {...register(`experiences.${index}.description`, {
+                            required: true,
+                          })}
                         />
                       </Field>
 
-                      <div className="w-full space-y-2">
+                      <Field>
+                        <FieldLabel htmlFor={`experiences.${index}.skills`}>
+                          Habilidades utilizadas
+                        </FieldLabel>
+                        <TagsInput
+                          name={`experiences.${index}.skills`}
+                          placeholder="Ex.: React, NestJS, PostgreSQL (Enter para adicionar)"
+                          maxTags={20}
+                        />
+                      </Field>
+                      <div className="flex gap-4 items-start">
                         <Field>
-                          <FieldLabel htmlFor={`experiences.${index}.end_date`}>
-                            Data de término
+                          <FieldLabel
+                            htmlFor={`experiences.${index}.start_date`}
+                          >
+                            Data de início
                           </FieldLabel>
                           <Input
-                            id={`experiences.${index}.end_date`}
+                            id={`experiences.${index}.start_date`}
                             type="text"
                             placeholder="Ex.: 02/2026"
-                            {...register(`experiences.${index}.end_date`)}
+                            {...register(`experiences.${index}.start_date`)}
                             onChange={(e) =>
                               setValue(
-                                `experiences.${index}.end_date`,
+                                `experiences.${index}.start_date`,
                                 formatMonthYear(e.target.value),
                               )
                             }
                           />
                         </Field>
 
-                        <Field orientation="horizontal">
-                          <Checkbox
-                            id={`experiences.${index}.current_job`}
-                            onCheckedChange={(value) =>
+                        <div className="w-full space-y-2">
+                          <Field>
+                            <FieldLabel
+                              htmlFor={`experiences.${index}.end_date`}
+                            >
+                              Data de término
+                            </FieldLabel>
+                            <Input
+                              id={`experiences.${index}.end_date`}
+                              type="text"
+                              placeholder="Ex.: 02/2026"
+                              {...register(`experiences.${index}.end_date`)}
+                              onChange={(e) =>
+                                setValue(
+                                  `experiences.${index}.end_date`,
+                                  formatMonthYear(e.target.value),
+                                )
+                              }
+                            />
+                          </Field>
+
+                          <Field orientation="horizontal">
+                            <Checkbox
+                              id={`experiences.${index}.current_job`}
+                              onCheckedChange={(value) =>
+                                setValue(
+                                  `experiences.${index}.current_job`,
+                                  !!value,
+                                )
+                              }
+                            />
+                            <FieldLabel
+                              htmlFor={`experiences.${index}.current_job`}
+                            >
+                              Este é meu trabalho atual
+                            </FieldLabel>
+                          </Field>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <Label>Formação Acadêmica</Label>
+                  <Button
+                    type="button"
+                    size="icon"
+                    aria-label="Add external link"
+                    onClick={() =>
+                      insertEducation(0, {
+                        degree: "",
+                        end_date: "",
+                        start_date: "",
+                        institution: "",
+                        in_progress: false,
+                      })
+                    }
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent>
+                <div className="space-y-6">
+                  {!education?.length && (
+                    <p className="text-base text-muted-foreground md:text-lg">
+                      Adicione uma formação acadêmica.
+                    </p>
+                  )}
+
+                  {education?.map((field, index) => (
+                    <div className="flex-1 space-y-4" key={field.id}>
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold">
+                          Formação{" "}
+                          {education.length > 1
+                            ? `${index + 1} de ${education.length}`
+                            : ``}
+                        </p>
+                        <Button
+                          type="button"
+                          className="self-end rounded-full"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Add external link"
+                          onClick={() => removeEducation(index)}
+                        >
+                          <Trash className="text-red-500" />
+                        </Button>
+                      </div>
+                      <Field>
+                        <FieldLabel htmlFor={`education.${index}.degree`}>
+                          Formação
+                        </FieldLabel>
+                        <Input
+                          id={`education.${index}.degree`}
+                          type="text"
+                          {...register(`education.${index}.degree`)}
+                        />
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor={`education.${index}.institution`}>
+                          Instituição de ensino
+                        </FieldLabel>
+                        <Input
+                          id={`education.${index}.institution`}
+                          type="text"
+                          {...register(`education.${index}.institution`)}
+                        />
+                      </Field>
+                      <div className="flex gap-4 items-start">
+                        <Field>
+                          <FieldLabel htmlFor={`education.${index}.start_date`}>
+                            Data de início
+                          </FieldLabel>
+                          <Input
+                            id={`education.${index}.start_date`}
+                            type="text"
+                            placeholder="Ex.: 02/2026"
+                            {...register(`education.${index}.start_date`)}
+                            onChange={(e) =>
                               setValue(
-                                `experiences.${index}.current_job`,
-                                !!value,
+                                `education.${index}.start_date`,
+                                formatMonthYear(e.target.value),
                               )
                             }
                           />
-                          <FieldLabel
-                            htmlFor={`experiences.${index}.current_job`}
-                          >
-                            Este é meu trabalho atual
-                          </FieldLabel>
                         </Field>
+
+                        <div className="w-full space-y-2">
+                          <Field>
+                            <FieldLabel htmlFor={`education.${index}.end_date`}>
+                              Data de término
+                            </FieldLabel>
+                            <Input
+                              id={`education.${index}.end_date`}
+                              type="text"
+                              placeholder="Ex.: 02/2026"
+                              {...register(`education.${index}.end_date`)}
+                              onChange={(e) =>
+                                setValue(
+                                  `education.${index}.end_date`,
+                                  formatMonthYear(e.target.value),
+                                )
+                              }
+                            />
+                          </Field>
+
+                          <Field orientation="horizontal">
+                            <Checkbox
+                              id={`education.${index}.in_progress`}
+                              onCheckedChange={(value) =>
+                                setValue(
+                                  `education.${index}.in_progress`,
+                                  !!value,
+                                )
+                              }
+                            />
+                            <FieldLabel
+                              htmlFor={`education.${index}.in_progress`}
+                            >
+                              Em andamento
+                            </FieldLabel>
+                          </Field>
+                        </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <Label>Idiomas</Label>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <Button
+                    type="button"
+                    size="icon"
+                    aria-label="Add a language that you speak"
+                    onClick={() => insertLanguage(0, { name: "", level: "" })}
+                  >
+                    <PlusIcon />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {!languages?.length && (
+                    <p className="text-base text-muted-foreground md:text-lg">
+                      Adicione os idiomas que você fala.
+                    </p>
+                  )}
 
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <Label>Formação Acadêmica</Label>
-                <Button
-                  type="button"
-                  size="icon"
-                  aria-label="Add external link"
-                  onClick={() =>
-                    insertEducation(0, {
-                      degree: "",
-                      end_date: "",
-                      start_date: "",
-                      institution: "",
-                      in_progress: false,
-                    })
-                  }
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </CardHeader>
+                  {languages?.map((field, index) => (
+                    <div className="flex gap-4 items-center" key={field.id}>
+                      <Field>
+                        {index === 0 && <FieldLabel>Idioma</FieldLabel>}
+                        <Input
+                          type="text"
+                          placeholder="Ex.: English"
+                          {...register(`languages.${index}.name`)}
+                        />
+                      </Field>
+                      <Field>
+                        {index === 0 && <FieldLabel>Nível</FieldLabel>}
+                        <Controller
+                          name={`languages.${index}.level`}
+                          control={control}
+                          render={({ field }) => (
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o nível" />
+                              </SelectTrigger>
 
-            <CardContent>
-              <div className="space-y-6">
-                {!education?.length && (
-                  <p className="text-base text-muted-foreground md:text-lg">
-                    Adicione uma formação acadêmica.
-                  </p>
-                )}
-
-                {education?.map((field, index) => (
-                  <div className="flex-1 space-y-4" key={field.id}>
-                    <div className="flex items-center justify-between">
-                      <p className="font-bold">
-                        Formação{" "}
-                        {education.length > 1
-                          ? `${index + 1} de ${education.length}`
-                          : ``}
-                      </p>
+                              <SelectContent>
+                                <SelectItem value="beginner">
+                                  Iniciante
+                                </SelectItem>
+                                <SelectItem value="intermediate">
+                                  Intermediário
+                                </SelectItem>
+                                <SelectItem value="advanced">
+                                  Avançado
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </Field>
                       <Button
                         type="button"
                         className="self-end rounded-full"
                         variant="ghost"
                         size="icon"
                         aria-label="Add external link"
-                        onClick={() => removeEducation(index)}
+                        onClick={() => removeLanguage(index)}
                       >
                         <Trash className="text-red-500" />
                       </Button>
                     </div>
-                    <Field>
-                      <FieldLabel htmlFor={`education.${index}.degree`}>
-                        Formação
-                      </FieldLabel>
-                      <Input
-                        id={`education.${index}.degree`}
-                        type="text"
-                        {...register(`education.${index}.degree`)}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor={`education.${index}.institution`}>
-                        Instituição de ensino
-                      </FieldLabel>
-                      <Input
-                        id={`education.${index}.institution`}
-                        type="text"
-                        {...register(`education.${index}.institution`)}
-                      />
-                    </Field>
-                    <div className="flex gap-4 items-start">
-                      <Field>
-                        <FieldLabel htmlFor={`education.${index}.start_date`}>
-                          Data de início
-                        </FieldLabel>
-                        <Input
-                          id={`education.${index}.start_date`}
-                          type="text"
-                          placeholder="Ex.: 02/2026"
-                          {...register(`education.${index}.start_date`)}
-                          onChange={(e) =>
-                            setValue(
-                              `education.${index}.start_date`,
-                              formatMonthYear(e.target.value),
-                            )
-                          }
-                        />
-                      </Field>
-
-                      <div className="w-full space-y-2">
-                        <Field>
-                          <FieldLabel htmlFor={`education.${index}.end_date`}>
-                            Data de término
-                          </FieldLabel>
-                          <Input
-                            id={`education.${index}.end_date`}
-                            type="text"
-                            placeholder="Ex.: 02/2026"
-                            {...register(`education.${index}.end_date`)}
-                            onChange={(e) =>
-                              setValue(
-                                `education.${index}.end_date`,
-                                formatMonthYear(e.target.value),
-                              )
-                            }
-                          />
-                        </Field>
-
-                        <Field orientation="horizontal">
-                          <Checkbox
-                            id={`education.${index}.in_progress`}
-                            onCheckedChange={(value) =>
-                              setValue(
-                                `education.${index}.in_progress`,
-                                !!value,
-                              )
-                            }
-                          />
-                          <FieldLabel
-                            htmlFor={`education.${index}.in_progress`}
-                          >
-                            Em andamento
-                          </FieldLabel>
-                        </Field>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <Label>Idiomas</Label>
+                  ))}
                 </div>
-                <Button
-                  type="button"
-                  size="icon"
-                  aria-label="Add a language that you speak"
-                  onClick={() => insertLanguage(0, { name: "", level: "" })}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {!languages?.length && (
-                  <p className="text-base text-muted-foreground md:text-lg">
-                    Adicione os idiomas que você fala.
-                  </p>
-                )}
-
-                {languages?.map((field, index) => (
-                  <div className="flex gap-4 items-center" key={field.id}>
-                    <Field>
-                      {index === 0 && <FieldLabel>Idioma</FieldLabel>}
-                      <Input
-                        type="text"
-                        placeholder="Ex.: English"
-                        {...register(`languages.${index}.name`)}
-                      />
-                    </Field>
-                    <Field>
-                      {index === 0 && <FieldLabel>Nível</FieldLabel>}
-                      <Controller
-                        name={`languages.${index}.level`}
-                        control={control}
-                        render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o nível" />
-                            </SelectTrigger>
-
-                            <SelectContent>
-                              <SelectItem value="beginner">Iniciante</SelectItem>
-                              <SelectItem value="intermediate">
-                                Intermediário
-                              </SelectItem>
-                              <SelectItem value="advanced">Avançado</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                    </Field>
-                    <Button
-                      type="button"
-                      className="self-end rounded-full"
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Add external link"
-                      onClick={() => removeLanguage(index)}
-                    >
-                      <Trash className="text-red-500" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </CardContent>
-      </Card>
-    </form>
+              </CardContent>
+            </Card>
+          </CardContent>
+        </Card>
+      </form>
+    </FormProvider>
   );
 }

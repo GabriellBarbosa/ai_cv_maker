@@ -12,19 +12,15 @@ import { cn } from "@/lib/utils";
 
 type TagsInputProps<TFieldValues extends FieldValues> = {
   name: FieldPath<TFieldValues>;
-  label?: string;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
-  /** se true, evita tags repetidas (case-insensitive) */
   preventDuplicates?: boolean;
-  /** limite opcional de tags */
   maxTags?: number;
 };
 
 export function TagsInput<TFieldValues extends FieldValues>({
   name,
-  label,
   placeholder = "Digite e pressione Enter",
   disabled,
   className,
@@ -84,11 +80,8 @@ export function TagsInput<TFieldValues extends FieldValues>({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {label ? (
-        <div className="text-sm font-medium leading-none">{label}</div>
-      ) : null}
-
       <Input
+        id={name}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={onKeyDown}
