@@ -32,12 +32,20 @@ import { TagsInput } from "./input-tag";
 export function ProfessionalInfoForm() {
   const form = useForm<Candidate>({
     resolver: zodResolver(CandidateSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       languages: [],
     },
   });
 
-  const { register, control, setValue, watch } = form;
+  const {
+    register,
+    control,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = form;
 
   const {
     fields: externalLinks,
@@ -75,7 +83,7 @@ export function ProfessionalInfoForm() {
     name: "languages",
   });
 
-  console.log(watch());
+  console.log(errors);
 
   return (
     <FormProvider {...form}>
@@ -89,24 +97,31 @@ export function ProfessionalInfoForm() {
           <CardContent className="space-y-6">
             <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
               <Field>
-                <FieldLabel htmlFor="name">Nome completo</FieldLabel>
+                <FieldLabel htmlFor="name">
+                  Nome completo<span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="name"
                   type="text"
                   {...register("name", {
-                    required: true,
+                    required: "Campo obrigatório",
                   })}
                 />
+                {errors.name?.message && (
+                  <p className="text-sm text-destructive">
+                    {errors.name?.message}
+                  </p>
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="professional_title">
-                  Cargo profissional
+                  Cargo<span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
                   id="professional_title"
                   type="text"
                   {...register("professional_title", {
-                    required: true,
+                    required: "Campo obrigatório",
                   })}
                 />
               </Field>
@@ -114,22 +129,26 @@ export function ProfessionalInfoForm() {
 
             <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
               <Field>
-                <FieldLabel htmlFor="email">E-mail</FieldLabel>
+                <FieldLabel htmlFor="email">
+                  E-mail<span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="email"
                   type="text"
                   {...register("contact_information.email", {
-                    required: true,
+                    required: "Campo obrigatório",
                   })}
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="phone">Celular</FieldLabel>
+                <FieldLabel htmlFor="phone">
+                  Celular<span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="phone"
                   type="text"
                   {...register("contact_information.phone", {
-                    required: true,
+                    required: "Campo obrigatório",
                   })}
                 />
               </Field>
@@ -137,35 +156,41 @@ export function ProfessionalInfoForm() {
 
             <div className="flex gap-y-6 gap-x-4 flex-row">
               <Field>
-                <FieldLabel htmlFor="state">Estado</FieldLabel>
+                <FieldLabel htmlFor="state">
+                  Estado<span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="state"
                   type="text"
                   {...register("contact_information.state", {
-                    required: true,
+                    required: "Campo obrigatório",
                   })}
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="city">Cidade</FieldLabel>
+                <FieldLabel htmlFor="city">
+                  Cidade<span className="text-destructive">*</span>
+                </FieldLabel>
                 <Input
                   id="city"
                   type="text"
                   {...register("contact_information.city", {
-                    required: true,
+                    required: "Campo obrigatório",
                   })}
                 />
               </Field>
             </div>
             <Field>
               <FieldLabel htmlFor="candidate_introduction">
-                Apresente-se
+                Apresente-se<span className="text-destructive">*</span>
               </FieldLabel>
               <Textarea
                 id="candidate_introduction"
                 rows={4}
                 placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
-                {...register("candidate_introduction", { required: true })}
+                {...register("candidate_introduction", {
+                  required: "Campo obrigatório",
+                })}
               />
             </Field>
 
@@ -208,18 +233,30 @@ export function ProfessionalInfoForm() {
                   {externalLinks?.map((field, index) => (
                     <div className="flex gap-4 items-center" key={field.id}>
                       <Field>
-                        {index === 0 && <FieldLabel>Nome</FieldLabel>}
+                        {index === 0 && (
+                          <FieldLabel>
+                            Nome<span className="text-destructive">*</span>
+                          </FieldLabel>
+                        )}
                         <Input
                           type="text"
                           placeholder="Ex.: LinkedIn"
-                          {...register(`external_links.${index}.label`)}
+                          {...register(`external_links.${index}.label`, {
+                            required: "Campo obrigatório",
+                          })}
                         />
                       </Field>
                       <Field>
-                        {index === 0 && <FieldLabel>URL</FieldLabel>}
+                        {index === 0 && (
+                          <FieldLabel>
+                            URL<span className="text-destructive">*</span>
+                          </FieldLabel>
+                        )}
                         <Input
                           type="text"
-                          {...register(`external_links.${index}.url`)}
+                          {...register(`external_links.${index}.url`, {
+                            required: "Campo obrigatório",
+                          })}
                         />
                       </Field>
                       <Button
@@ -293,22 +330,26 @@ export function ProfessionalInfoForm() {
                       </div>
                       <Field>
                         <FieldLabel htmlFor={`experiences.${index}.role`}>
-                          Cargo
+                          Cargo<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id={`experiences.${index}.role`}
                           type="text"
-                          {...register(`experiences.${index}.role`)}
+                          {...register(`experiences.${index}.role`, {
+                            required: "Campo obrigatório",
+                          })}
                         />
                       </Field>
                       <Field>
                         <FieldLabel htmlFor={`experiences.${index}.company`}>
-                          Empresa
+                          Empresa<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id={`experiences.${index}.company`}
                           type="text"
-                          {...register(`experiences.${index}.company`)}
+                          {...register(`experiences.${index}.company`, {
+                            required: "Campo obrigatório",
+                          })}
                         />
                       </Field>
                       <Field>
@@ -316,13 +357,14 @@ export function ProfessionalInfoForm() {
                           htmlFor={`experiences.${index}.description`}
                         >
                           Descrição de atividades
+                          <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Textarea
                           id={`experiences.${index}.description`}
                           rows={4}
                           placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
                           {...register(`experiences.${index}.description`, {
-                            required: true,
+                            required: "Campo obrigatório",
                           })}
                         />
                       </Field>
@@ -343,12 +385,15 @@ export function ProfessionalInfoForm() {
                             htmlFor={`experiences.${index}.start_date`}
                           >
                             Data de início
+                            <span className="text-destructive">*</span>
                           </FieldLabel>
                           <Input
                             id={`experiences.${index}.start_date`}
                             type="text"
                             placeholder="Ex.: 02/2026"
-                            {...register(`experiences.${index}.start_date`)}
+                            {...register(`experiences.${index}.start_date`, {
+                              required: "Campo obrigatório",
+                            })}
                             onChange={(e) =>
                               setValue(
                                 `experiences.${index}.start_date`,
@@ -364,12 +409,22 @@ export function ProfessionalInfoForm() {
                               htmlFor={`experiences.${index}.end_date`}
                             >
                               Data de término
+                              <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Input
                               id={`experiences.${index}.end_date`}
                               type="text"
                               placeholder="Ex.: 02/2026"
-                              {...register(`experiences.${index}.end_date`)}
+                              disabled={getValues(
+                                `experiences.${index}.current_job`,
+                              )}
+                              {...register(`experiences.${index}.end_date`, {
+                                required: getValues(
+                                  `experiences.${index}.current_job`,
+                                )
+                                  ? undefined
+                                  : "Campo obrigatório",
+                              })}
                               onChange={(e) =>
                                 setValue(
                                   `experiences.${index}.end_date`,

@@ -5,6 +5,7 @@ export const CandidateSchema = z.object({
   professional_title: z.string(),
   candidate_introduction: z.string(),
   skills: z.array(z.string()),
+
   contact_information: z.object({
     email: z.string(),
     phone: z.string(),
