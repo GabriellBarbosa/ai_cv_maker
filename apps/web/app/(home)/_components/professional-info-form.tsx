@@ -28,15 +28,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TagsInput } from "./input-tag";
+import { useRHFFormPersistence } from "../_hooks/use-persist-to-local-storage";
+import { useEffect } from "react";
+
+const STORAGE_KEY = "cv:profile";
 
 export function ProfessionalInfoForm() {
   const form = useForm<Candidate>({
     resolver: zodResolver(CandidateSchema),
     mode: "onTouched",
     reValidateMode: "onChange",
-    defaultValues: {
-      languages: [],
-    },
   });
 
   const {
@@ -83,7 +84,28 @@ export function ProfessionalInfoForm() {
     name: "languages",
   });
 
-  console.log(errors);
+  useRHFFormPersistence({
+    control: form.control,
+    storageKey: STORAGE_KEY,
+    delay: 300,
+  });
+
+  useEffect(() => {
+    localStorage.setItem("cv:profile:isValid", String(form.formState.isValid));
+  }, [form.formState.isValid]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+
+    if (!raw) return;
+
+    try {
+      const data = JSON.parse(raw);
+      form.reset(data);
+    } catch {
+      console.error('Perfil profissional deve estar corrompido')
+    }
+  }, [form]);
 
   return (
     <FormProvider {...form}>
