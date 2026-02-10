@@ -1,22 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm, type UseFormReturn } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { GenerateRequestSchema, type GenerateResponse } from "@/types";
+import { type GenerateResponse } from "@/types";
 import { Packer } from "docx";
 import { saveAs } from "file-saver";
 import { ResumeDocxBuilder } from "@/lib/ResumeDocxBuilder";
 import { CoverLetterDocxBuilder } from "@/lib/CoverLetterDocxBuilder";
 import { mapServerErrorToFriendlyMessage } from "@/utils/functions/map_server_error_to_friendly_message";
-import { defaultProfessionalInfo } from "@/utils/constants/default_professional_info";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const MIN_CHAR_COUNT = 120;
-const PROFESSIONAL_INFO_STORAGE_KEY = "generate-form-professional-info";
 
 export type GenerateFormData = {
-  candidate_text: string;
   job_text: string;
   language: "pt-BR" | "en-US";
   tone: "profissional" | "neutro" | "criativo";
@@ -27,22 +22,7 @@ type StatusStep = {
   label: string;
 };
 
-export type UseGenerateFormReturn = {
-  form: UseFormReturn<GenerateFormData>;
-  error: string | null;
-  response: GenerateResponse | null;
-  isLoading: boolean;
-  language: GenerateFormData["language"];
-  tone: GenerateFormData["tone"];
-  statusSteps: StatusStep[];
-  statusStep: number | null;
-  shouldShowStatus: boolean;
-  onSubmit: (data: GenerateFormData) => Promise<void>;
-  handleDownloadResumeDocx: () => Promise<void>;
-  handleDownloadCoverLetterDocx: () => Promise<void>;
-};
-
-export function useGenerateForm(): UseGenerateFormReturn {
+export function useGenerateForm() {
   const [response, setResponse] = useState<GenerateResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,53 +31,11 @@ export function useGenerateForm(): UseGenerateFormReturn {
   const [statusStep, setStatusStep] = useState<number | null>(null);
 
   const statusSteps = useMemo<StatusStep[]>(
-    () => [
-      { label: "Extracting requirements" },
-      { label: "Generating content" },
-    ],
+    () => [{ label: "Extraindo requisitos" }, { label: "Gerando conteúdo" }],
     [],
   );
 
-  const form = useForm<GenerateFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(GenerateRequestSchema) as any,
-    defaultValues: {
-      candidate_text: defaultProfessionalInfo,
-      job_text: "",
-      language: "pt-BR",
-      tone: "profissional",
-      format: "docx",
-    },
-  });
-
-  const language = form.watch("language");
-  const tone = form.watch("tone");
-  const candidateText = form.watch("candidate_text");
-
   const shouldShowStatus = statusStep !== null && (isLoading || !!response);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const savedText = window.localStorage.getItem(
-      PROFESSIONAL_INFO_STORAGE_KEY,
-    );
-
-    if (savedText) {
-      form.setValue("candidate_text", savedText, { shouldDirty: true });
-    }
-  }, [form]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    if (!candidateText) {
-      window.localStorage.removeItem(PROFESSIONAL_INFO_STORAGE_KEY);
-      return;
-    }
-
-    window.localStorage.setItem(PROFESSIONAL_INFO_STORAGE_KEY, candidateText);
-  }, [candidateText]);
 
   const extractCompanyFromGreeting = useCallback((greeting: string) => {
     const match = greeting.match(/\b(?:at|da|do|de)\s+([^,]+)/i);
@@ -112,11 +50,6 @@ export function useGenerateForm(): UseGenerateFormReturn {
   const onSubmit = useCallback(
     async (data: GenerateFormData) => {
       setError(null);
-
-      if (!isInputValid(data.candidate_text, data.job_text)) {
-        return;
-      }
-
       setIsLoading(true);
       setStatusStep(0);
       setResponse(null);
@@ -133,7 +66,10 @@ export function useGenerateForm(): UseGenerateFormReturn {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            candidate_text: window.localStorage.getItem("cv:profile"),
+            ...data,
+          }),
           signal: controller.signal,
         });
 
@@ -190,27 +126,6 @@ export function useGenerateForm(): UseGenerateFormReturn {
     },
     [mapServerErrorToFriendlyMessage],
   );
-
-  const isInputValid = useCallback((candidateText: string, jobText: string) => {
-    const trimmedCandidate = candidateText.trim();
-    const trimmedJob = jobText.trim();
-
-    if (trimmedCandidate.length < MIN_CHAR_COUNT) {
-      setError(
-        "We need more details about you. Include achievements, responsibilities, and relevant results.",
-      );
-      return false;
-    }
-
-    if (trimmedJob.length < MIN_CHAR_COUNT) {
-      setError(
-        "The job posting text is too short. Please add requirements, responsibilities, or additional context.",
-      );
-      return false;
-    }
-
-    return true;
-  }, []);
 
   const getErrorMessageFromResponse = useCallback(async (res: Response) => {
     let parsedError: unknown = null;
@@ -314,12 +229,9 @@ export function useGenerateForm(): UseGenerateFormReturn {
   }, [extractCompanyFromGreeting, generatedLanguage, response]);
 
   return {
-    form,
     error,
     response,
     isLoading,
-    language,
-    tone,
     statusSteps,
     statusStep,
     shouldShowStatus,
