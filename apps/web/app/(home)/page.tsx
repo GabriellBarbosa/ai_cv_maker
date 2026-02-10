@@ -11,7 +11,7 @@ export default function Home() {
         >
           <div className="flex flex-col gap-6">
             <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Traga sua experiência e deixe que a IA cuide do resto.
+              Traga sua experiência e deixe que a nossa IA cuide do resto.
             </h2>
             <p className="text-base text-muted-foreground md:text-lg">
               Conte sua história, cole descrição da vaga e deixe nossa IA criar
@@ -20,7 +20,7 @@ export default function Home() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Personalize o tom e o formato.
+                Personalize o tom e o idioma (Inglês ou Português).
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />

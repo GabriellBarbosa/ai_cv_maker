@@ -1,7 +1,18 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Candidate,
@@ -30,6 +41,7 @@ import {
 import { TagsInput } from "./input-tag";
 import { useRHFFormPersistence } from "../_hooks/use-persist-to-local-storage";
 import { useEffect } from "react";
+import { twMerge } from "tailwind-merge";
 
 const STORAGE_KEY = "cv:profile";
 
@@ -103,7 +115,7 @@ export function ProfessionalInfoForm() {
       const data = JSON.parse(raw);
       form.reset(data);
     } catch {
-      console.error('Perfil profissional deve estar corrompido')
+      console.error("Perfil profissional deve estar corrompido");
     }
   }, [form]);
 
@@ -115,6 +127,9 @@ export function ProfessionalInfoForm() {
             <CardTitle className="text-2xl font-semibold">
               Seu perfil profissional
             </CardTitle>
+            <CardDescription>
+              As informações são salvas automaticamente no navegador.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
@@ -123,16 +138,13 @@ export function ProfessionalInfoForm() {
                   Nome completo<span className="text-destructive">*</span>
                 </FieldLabel>
                 <Input
+                  className="mb-0"
                   id="name"
                   type="text"
-                  {...register("name", {
-                    required: "Campo obrigatório",
-                  })}
+                  {...register("name")}
                 />
                 {errors.name?.message && (
-                  <p className="text-sm text-destructive">
-                    {errors.name?.message}
-                  </p>
+                  <FieldError>{errors.name?.message}</FieldError>
                 )}
               </Field>
               <Field>
@@ -142,10 +154,11 @@ export function ProfessionalInfoForm() {
                 <Input
                   id="professional_title"
                   type="text"
-                  {...register("professional_title", {
-                    required: "Campo obrigatório",
-                  })}
+                  {...register("professional_title")}
                 />
+                {errors.professional_title?.message && (
+                  <FieldError>{errors.professional_title?.message}</FieldError>
+                )}
               </Field>
             </div>
 
@@ -157,10 +170,13 @@ export function ProfessionalInfoForm() {
                 <Input
                   id="email"
                   type="text"
-                  {...register("contact_information.email", {
-                    required: "Campo obrigatório",
-                  })}
+                  {...register("contact_information.email")}
                 />
+                {errors?.contact_information?.email?.message && (
+                  <FieldError>
+                    {errors?.contact_information.email?.message}
+                  </FieldError>
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="phone">
@@ -168,11 +184,15 @@ export function ProfessionalInfoForm() {
                 </FieldLabel>
                 <Input
                   id="phone"
-                  type="text"
-                  {...register("contact_information.phone", {
-                    required: "Campo obrigatório",
-                  })}
+                  type="tel"
+                  {...register("contact_information.phone")}
                 />
+
+                {errors?.contact_information?.phone?.message && (
+                  <FieldError>
+                    {errors.contact_information.phone.message}
+                  </FieldError>
+                )}
               </Field>
             </div>
 
@@ -184,10 +204,13 @@ export function ProfessionalInfoForm() {
                 <Input
                   id="state"
                   type="text"
-                  {...register("contact_information.state", {
-                    required: "Campo obrigatório",
-                  })}
+                  {...register("contact_information.state")}
                 />
+                {errors?.contact_information?.state?.message && (
+                  <FieldError>
+                    {errors.contact_information.state.message}
+                  </FieldError>
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="city">
@@ -196,10 +219,13 @@ export function ProfessionalInfoForm() {
                 <Input
                   id="city"
                   type="text"
-                  {...register("contact_information.city", {
-                    required: "Campo obrigatório",
-                  })}
+                  {...register("contact_information.city")}
                 />
+                {errors?.contact_information?.city?.message && (
+                  <FieldError>
+                    {errors.contact_information.city.message}
+                  </FieldError>
+                )}
               </Field>
             </div>
             <Field>
@@ -210,10 +236,13 @@ export function ProfessionalInfoForm() {
                 id="candidate_introduction"
                 rows={4}
                 placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
-                {...register("candidate_introduction", {
-                  required: "Campo obrigatório",
-                })}
+                {...register("candidate_introduction")}
               />
+              {errors.candidate_introduction?.message && (
+                <FieldError>
+                  {errors.candidate_introduction?.message}
+                </FieldError>
+              )}
             </Field>
 
             <Field>
@@ -253,37 +282,28 @@ export function ProfessionalInfoForm() {
                   )}
 
                   {externalLinks?.map((field, index) => (
-                    <div className="flex gap-4 items-center" key={field.id}>
-                      <Field>
-                        {index === 0 && (
-                          <FieldLabel>
-                            Nome<span className="text-destructive">*</span>
-                          </FieldLabel>
-                        )}
-                        <Input
-                          type="text"
-                          placeholder="Ex.: LinkedIn"
-                          {...register(`external_links.${index}.label`, {
-                            required: "Campo obrigatório",
-                          })}
-                        />
-                      </Field>
-                      <Field>
-                        {index === 0 && (
-                          <FieldLabel>
-                            URL<span className="text-destructive">*</span>
-                          </FieldLabel>
-                        )}
-                        <Input
-                          type="text"
-                          {...register(`external_links.${index}.url`, {
-                            required: "Campo obrigatório",
-                          })}
-                        />
-                      </Field>
+                    <div
+                      className="grid grid-cols-[1fr_1fr_auto] gap-4"
+                      key={field.id}
+                    >
+                      {index === 0 && (
+                        <FieldLabel>
+                          Nome<span className="text-destructive">*</span>
+                        </FieldLabel>
+                      )}
+
+                      {index === 0 && (
+                        <FieldLabel>
+                          URL<span className="text-destructive">*</span>
+                        </FieldLabel>
+                      )}
+
                       <Button
                         type="button"
-                        className="self-end rounded-full"
+                        className={twMerge(
+                          "rounded-full col-start-3 row-start-1",
+                          index === 0 && "row-start-2",
+                        )}
                         variant="ghost"
                         size="icon"
                         aria-label="Add external link"
@@ -291,6 +311,31 @@ export function ProfessionalInfoForm() {
                       >
                         <Trash className="text-red-500" />
                       </Button>
+
+                      <Input
+                        type="text"
+                        className="col-start-1"
+                        placeholder="Ex.: LinkedIn"
+                        {...register(`external_links.${index}.label`)}
+                      />
+
+                      <Input
+                        type="text"
+                        className="col-start-2"
+                        {...register(`external_links.${index}.url`)}
+                      />
+
+                      {errors?.external_links?.[index]?.label?.message && (
+                        <FieldError>
+                          {errors.external_links[index].label.message}
+                        </FieldError>
+                      )}
+
+                      {errors?.external_links?.[index]?.url?.message && (
+                        <FieldError>
+                          {errors.external_links[index].url.message}
+                        </FieldError>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -351,28 +396,34 @@ export function ProfessionalInfoForm() {
                         </Button>
                       </div>
                       <Field>
-                        <FieldLabel htmlFor={`experiences.${index}.role`}>
-                          Cargo<span className="text-destructive">*</span>
-                        </FieldLabel>
-                        <Input
-                          id={`experiences.${index}.role`}
-                          type="text"
-                          {...register(`experiences.${index}.role`, {
-                            required: "Campo obrigatório",
-                          })}
-                        />
-                      </Field>
-                      <Field>
                         <FieldLabel htmlFor={`experiences.${index}.company`}>
                           Empresa<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id={`experiences.${index}.company`}
                           type="text"
-                          {...register(`experiences.${index}.company`, {
-                            required: "Campo obrigatório",
-                          })}
+                          {...register(`experiences.${index}.company`)}
                         />
+                        {errors?.experiences?.[index]?.company?.message && (
+                          <FieldError>
+                            {errors.experiences[index].company.message}
+                          </FieldError>
+                        )}
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor={`experiences.${index}.role`}>
+                          Cargo<span className="text-destructive">*</span>
+                        </FieldLabel>
+                        <Input
+                          id={`experiences.${index}.role`}
+                          type="text"
+                          {...register(`experiences.${index}.role`)}
+                        />
+                        {errors?.experiences?.[index]?.role?.message && (
+                          <FieldError>
+                            {errors.experiences[index].role.message}
+                          </FieldError>
+                        )}
                       </Field>
                       <Field>
                         <FieldLabel
@@ -385,10 +436,13 @@ export function ProfessionalInfoForm() {
                           id={`experiences.${index}.description`}
                           rows={4}
                           placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
-                          {...register(`experiences.${index}.description`, {
-                            required: "Campo obrigatório",
-                          })}
+                          {...register(`experiences.${index}.description`)}
                         />
+                        {errors?.experiences?.[index]?.description?.message && (
+                          <FieldError>
+                            {errors.experiences[index].description.message}
+                          </FieldError>
+                        )}
                       </Field>
 
                       <Field>
@@ -413,9 +467,7 @@ export function ProfessionalInfoForm() {
                             id={`experiences.${index}.start_date`}
                             type="text"
                             placeholder="Ex.: 02/2026"
-                            {...register(`experiences.${index}.start_date`, {
-                              required: "Campo obrigatório",
-                            })}
+                            {...register(`experiences.${index}.start_date`)}
                             onChange={(e) =>
                               setValue(
                                 `experiences.${index}.start_date`,
@@ -423,6 +475,12 @@ export function ProfessionalInfoForm() {
                               )
                             }
                           />
+                          {errors?.experiences?.[index]?.start_date
+                            ?.message && (
+                            <FieldError>
+                              {errors.experiences[index].start_date.message}
+                            </FieldError>
+                          )}
                         </Field>
 
                         <div className="w-full space-y-2">
@@ -440,13 +498,7 @@ export function ProfessionalInfoForm() {
                               disabled={getValues(
                                 `experiences.${index}.current_job`,
                               )}
-                              {...register(`experiences.${index}.end_date`, {
-                                required: getValues(
-                                  `experiences.${index}.current_job`,
-                                )
-                                  ? undefined
-                                  : "Campo obrigatório",
-                              })}
+                              {...register(`experiences.${index}.end_date`)}
                               onChange={(e) =>
                                 setValue(
                                   `experiences.${index}.end_date`,
@@ -454,11 +506,20 @@ export function ProfessionalInfoForm() {
                                 )
                               }
                             />
+                            {errors?.experiences?.[index]?.end_date
+                              ?.message && (
+                              <FieldError>
+                                {errors.experiences[index].end_date.message}
+                              </FieldError>
+                            )}
                           </Field>
 
                           <Field orientation="horizontal">
                             <Checkbox
                               id={`experiences.${index}.current_job`}
+                              checked={getValues(
+                                `experiences.${index}.current_job`,
+                              )}
                               onCheckedChange={(value) =>
                                 setValue(
                                   `experiences.${index}.current_job`,
@@ -533,28 +594,41 @@ export function ProfessionalInfoForm() {
                       </div>
                       <Field>
                         <FieldLabel htmlFor={`education.${index}.degree`}>
-                          Formação
+                          Curso
+                          <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id={`education.${index}.degree`}
                           type="text"
                           {...register(`education.${index}.degree`)}
                         />
+                        {errors?.education?.[index]?.degree?.message && (
+                          <FieldError>
+                            {errors.education[index].degree.message}
+                          </FieldError>
+                        )}
                       </Field>
                       <Field>
                         <FieldLabel htmlFor={`education.${index}.institution`}>
                           Instituição de ensino
+                          <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id={`education.${index}.institution`}
                           type="text"
                           {...register(`education.${index}.institution`)}
                         />
+                        {errors?.education?.[index]?.institution?.message && (
+                          <FieldError>
+                            {errors.education[index].institution.message}
+                          </FieldError>
+                        )}
                       </Field>
                       <div className="flex gap-4 items-start">
                         <Field>
                           <FieldLabel htmlFor={`education.${index}.start_date`}>
                             Data de início
+                            <span className="text-destructive">*</span>
                           </FieldLabel>
                           <Input
                             id={`education.${index}.start_date`}
@@ -568,6 +642,11 @@ export function ProfessionalInfoForm() {
                               )
                             }
                           />
+                          {errors?.education?.[index]?.start_date?.message && (
+                            <FieldError>
+                              {errors.education[index].start_date.message}
+                            </FieldError>
+                          )}
                         </Field>
 
                         <div className="w-full space-y-2">
@@ -592,6 +671,9 @@ export function ProfessionalInfoForm() {
                           <Field orientation="horizontal">
                             <Checkbox
                               id={`education.${index}.in_progress`}
+                              checked={getValues(
+                                `education.${index}.in_progress`,
+                              )}
                               onCheckedChange={(value) =>
                                 setValue(
                                   `education.${index}.in_progress`,
@@ -638,48 +720,30 @@ export function ProfessionalInfoForm() {
                   )}
 
                   {languages?.map((field, index) => (
-                    <div className="flex gap-4 items-center" key={field.id}>
-                      <Field>
-                        {index === 0 && <FieldLabel>Idioma</FieldLabel>}
-                        <Input
-                          type="text"
-                          placeholder="Ex.: English"
-                          {...register(`languages.${index}.name`)}
-                        />
-                      </Field>
-                      <Field>
-                        {index === 0 && <FieldLabel>Nível</FieldLabel>}
-                        <Controller
-                          name={`languages.${index}.level`}
-                          control={control}
-                          render={({ field }) => (
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione o nível" />
-                              </SelectTrigger>
+                    <div
+                      className="grid grid-cols-[1fr_1fr_auto] gap-4"
+                      key={field.id}
+                    >
+                      {index === 0 && (
+                        <FieldLabel htmlFor={`languages.${index}.name`}>
+                          Idioma
+                          <span className="text-destructive">*</span>
+                        </FieldLabel>
+                      )}
 
-                              <SelectContent>
-                                <SelectItem value="beginner">
-                                  Iniciante
-                                </SelectItem>
-                                <SelectItem value="intermediate">
-                                  Intermediário
-                                </SelectItem>
-                                <SelectItem value="advanced">
-                                  Avançado
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
-                        />
-                      </Field>
+                      {index === 0 && (
+                        <FieldLabel htmlFor={`languages.${index}.level`}>
+                          Nível
+                          <span className="text-destructive">*</span>
+                        </FieldLabel>
+                      )}
+
                       <Button
                         type="button"
-                        className="self-end rounded-full"
+                        className={twMerge(
+                          "col-start-3 row-start-1",
+                          index === 0 && "row-start-2",
+                        )}
                         variant="ghost"
                         size="icon"
                         aria-label="Add external link"
@@ -687,6 +751,59 @@ export function ProfessionalInfoForm() {
                       >
                         <Trash className="text-red-500" />
                       </Button>
+
+                      <Input
+                        className="col-start-1"
+                        id={`languages.${index}.name`}
+                        type="text"
+                        placeholder="Ex.: English"
+                        {...register(`languages.${index}.name`)}
+                      />
+
+                      <Controller
+                        name={`languages.${index}.level`}
+                        control={control}
+                        rules={{ required: "Nível é obrigatório" }}
+                        render={({ field }) => (
+                          <Select
+                            name={`languages.${index}.level`}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                            }}
+                            onOpenChange={(open) => {
+                              if (!open) {
+                                field.onBlur();
+                              }
+                            }}
+                          >
+                            <SelectTrigger aria-invalid>
+                              <SelectValue placeholder="Selecione o nível" />
+                            </SelectTrigger>
+
+                            <SelectContent>
+                              <SelectItem value="beginner">
+                                Iniciante
+                              </SelectItem>
+                              <SelectItem value="intermediate">
+                                Intermediário
+                              </SelectItem>
+                              <SelectItem value="advanced">Avançado</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+
+                      {errors?.languages?.[index]?.name?.message && (
+                        <FieldError>
+                          {errors.languages[index].name.message}
+                        </FieldError>
+                      )}
+
+                      {errors?.languages?.[index]?.level?.message && (
+                        <FieldError>
+                          {errors.languages[index].level.message}
+                        </FieldError>
+                      )}
                     </div>
                   ))}
                 </div>
