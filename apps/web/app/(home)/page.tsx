@@ -1,7 +1,36 @@
+"use client";
+
 import { GenerateForm } from "@/app/(home)/_components/generate-resume-form";
 import { ProfessionalInfoForm } from "./_components/professional-info-form";
+import {
+  Candidate,
+  CandidateSchema,
+} from "@/types/professional-info-form.type";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { GenerateFormData } from "./_hooks/use-generate-form";
+import { GenerateRequestSchema } from "@/types";
 
 export default function Home() {
+  const candidateForm = useForm<Candidate>({
+    resolver: zodResolver(CandidateSchema),
+    shouldFocusError: true,
+    mode: "onBlur",
+    reValidateMode: "onChange",
+  });
+
+  const generateResumeForm = useForm<GenerateFormData>({
+    resolver: zodResolver(GenerateRequestSchema) as any,
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: {
+      job_text: "",
+      language: "pt-BR",
+      tone: "profissional",
+      format: "docx",
+    },
+  });
+
   return (
     <div>
       <main className="container mx-auto pb-24 pt-20 grid gap-10 lg:items-start lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
@@ -35,8 +64,15 @@ export default function Home() {
           </div>
         </section>
         <section id="generate" className="lg:px-6 space-y-6">
-          <ProfessionalInfoForm />
-          <GenerateForm />
+          <ProfessionalInfoForm form={candidateForm} />
+          <GenerateForm
+            form={generateResumeForm}
+            triggerCandidateForm={async () =>
+              await candidateForm.trigger(undefined, {
+                shouldFocus: true,
+              })
+            }
+          />
         </section>
       </main>
     </div>

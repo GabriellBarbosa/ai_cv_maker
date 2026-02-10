@@ -20,12 +20,11 @@ const endDate = z
   );
 
 export const CandidateSchema = z.object({
-  name: requiredText("Nome"),
-  professional_title: requiredText("Cargo"),
-  candidate_introduction: requiredText("Apresente-se"),
-  skills: z.array(z.string()),
-
-  contact_information: z.object({
+  profile: z.object({
+    name: requiredText("Nome"),
+    professional_title: requiredText("Cargo"),
+    candidate_introduction: requiredText("Apresente-se"),
+    skills: z.array(z.string()),
     email: z
       .string()
       .min(1, { message: "E-mail é obrigatório" })

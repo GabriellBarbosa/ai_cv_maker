@@ -7,23 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Candidate,
-  CandidateSchema,
-} from "@/types/professional-info-form.type";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Candidate } from "@/types/professional-info-form.type";
 import {
   Controller,
   FormProvider,
   useFieldArray,
-  useForm,
+  UseFormReturn,
 } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -43,15 +34,11 @@ import { useRHFFormPersistence } from "../_hooks/use-persist-to-local-storage";
 import { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 
-const STORAGE_KEY = "cv:profile";
+interface Props {
+  form: UseFormReturn<Candidate>;
+}
 
-export function ProfessionalInfoForm() {
-  const form = useForm<Candidate>({
-    resolver: zodResolver(CandidateSchema),
-    mode: "onTouched",
-    reValidateMode: "onChange",
-  });
-
+export function ProfessionalInfoForm({ form }: Props) {
   const {
     register,
     control,
@@ -98,7 +85,7 @@ export function ProfessionalInfoForm() {
 
   useRHFFormPersistence({
     control: form.control,
-    storageKey: STORAGE_KEY,
+    storageKey: "cv:profile",
     delay: 300,
   });
 
@@ -107,7 +94,7 @@ export function ProfessionalInfoForm() {
   }, [form.formState.isValid]);
 
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem("cv:profile");
 
     if (!raw) return;
 
@@ -128,131 +115,134 @@ export function ProfessionalInfoForm() {
               Seu perfil profissional
             </CardTitle>
             <CardDescription>
-              As informações são salvas automaticamente no navegador.
+              Seu perfil profissional é salvo automaticamente.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
-              <Field>
-                <FieldLabel htmlFor="name">
-                  Nome completo<span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  className="mb-0"
-                  id="name"
-                  type="text"
-                  {...register("name")}
-                />
-                {errors.name?.message && (
-                  <FieldError>{errors.name?.message}</FieldError>
-                )}
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="professional_title">
-                  Cargo<span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  id="professional_title"
-                  type="text"
-                  {...register("professional_title")}
-                />
-                {errors.professional_title?.message && (
-                  <FieldError>{errors.professional_title?.message}</FieldError>
-                )}
-              </Field>
-            </div>
+            <Card>
+              <CardHeader>
+                <Label>Perfil</Label>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
+                  <Field>
+                    <FieldLabel htmlFor="profile.name">
+                      Nome completo<span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      className="mb-0"
+                      id="profile.name"
+                      type="text"
+                      {...register("profile.name")}
+                    />
+                    {errors.profile?.name?.message && (
+                      <FieldError>{errors.profile.name?.message}</FieldError>
+                    )}
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="profile.professional_title">
+                      Cargo<span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      id="profile.professional_title"
+                      type="text"
+                      {...register("profile.professional_title")}
+                    />
+                    {errors.profile?.professional_title?.message && (
+                      <FieldError>
+                        {errors.profile.professional_title?.message}
+                      </FieldError>
+                    )}
+                  </Field>
+                </div>
 
-            <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
-              <Field>
-                <FieldLabel htmlFor="email">
-                  E-mail<span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  id="email"
-                  type="text"
-                  {...register("contact_information.email")}
-                />
-                {errors?.contact_information?.email?.message && (
-                  <FieldError>
-                    {errors?.contact_information.email?.message}
-                  </FieldError>
-                )}
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="phone">
-                  Celular<span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  id="phone"
-                  type="tel"
-                  {...register("contact_information.phone")}
-                />
+                <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
+                  <Field>
+                    <FieldLabel htmlFor="profile.email">
+                      E-mail<span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      id="profile.email"
+                      type="text"
+                      {...register("profile.email")}
+                    />
+                    {errors?.profile?.email?.message && (
+                      <FieldError>{errors?.profile.email?.message}</FieldError>
+                    )}
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="profile.phone">
+                      Celular<span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      id="profile.phone"
+                      type="tel"
+                      {...register("profile.phone")}
+                    />
 
-                {errors?.contact_information?.phone?.message && (
-                  <FieldError>
-                    {errors.contact_information.phone.message}
-                  </FieldError>
-                )}
-              </Field>
-            </div>
+                    {errors?.profile?.phone?.message && (
+                      <FieldError>{errors.profile.phone.message}</FieldError>
+                    )}
+                  </Field>
+                </div>
 
-            <div className="flex gap-y-6 gap-x-4 flex-row">
-              <Field>
-                <FieldLabel htmlFor="state">
-                  Estado<span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  id="state"
-                  type="text"
-                  {...register("contact_information.state")}
-                />
-                {errors?.contact_information?.state?.message && (
-                  <FieldError>
-                    {errors.contact_information.state.message}
-                  </FieldError>
-                )}
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="city">
-                  Cidade<span className="text-destructive">*</span>
-                </FieldLabel>
-                <Input
-                  id="city"
-                  type="text"
-                  {...register("contact_information.city")}
-                />
-                {errors?.contact_information?.city?.message && (
-                  <FieldError>
-                    {errors.contact_information.city.message}
-                  </FieldError>
-                )}
-              </Field>
-            </div>
-            <Field>
-              <FieldLabel htmlFor="candidate_introduction">
-                Apresente-se<span className="text-destructive">*</span>
-              </FieldLabel>
-              <Textarea
-                id="candidate_introduction"
-                rows={4}
-                placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
-                {...register("candidate_introduction")}
-              />
-              {errors.candidate_introduction?.message && (
-                <FieldError>
-                  {errors.candidate_introduction?.message}
-                </FieldError>
-              )}
-            </Field>
+                <div className="flex gap-y-6 gap-x-4 flex-row">
+                  <Field>
+                    <FieldLabel htmlFor="profile.state">
+                      Estado<span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      id="profile.state"
+                      type="text"
+                      {...register("profile.state")}
+                    />
+                    {errors?.profile?.state?.message && (
+                      <FieldError>{errors.profile.state.message}</FieldError>
+                    )}
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="profile.city">
+                      Cidade<span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      id="profile.city"
+                      type="text"
+                      {...register("profile.city")}
+                    />
+                    {errors?.profile?.city?.message && (
+                      <FieldError>{errors.profile.city.message}</FieldError>
+                    )}
+                  </Field>
+                </div>
+                <Field>
+                  <FieldLabel htmlFor="profile.candidate_introduction">
+                    Apresente-se<span className="text-destructive">*</span>
+                  </FieldLabel>
+                  <Textarea
+                    id="profile.candidate_introduction"
+                    rows={6}
+                    placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
+                    {...register("profile.candidate_introduction")}
+                  />
+                  {errors?.profile?.candidate_introduction?.message && (
+                    <FieldError>
+                      {errors.profile.candidate_introduction?.message}
+                    </FieldError>
+                  )}
+                </Field>
 
-            <Field>
-              <FieldLabel htmlFor={`skills`}>Habilidades</FieldLabel>
-              <TagsInput
-                name={`skills`}
-                placeholder="Ex.: React, NestJS, PostgreSQL (Enter para adicionar)"
-                maxTags={20}
-              />
-            </Field>
+                <Field>
+                  <FieldLabel htmlFor={`profile.skills`}>
+                    Habilidades
+                  </FieldLabel>
+                  <TagsInput
+                    name={`profile.skills`}
+                    placeholder="Ex.: React, NestJS, PostgreSQL (Enter para adicionar)"
+                    maxTags={20}
+                  />
+                </Field>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
@@ -326,13 +316,13 @@ export function ProfessionalInfoForm() {
                       />
 
                       {errors?.external_links?.[index]?.label?.message && (
-                        <FieldError>
+                        <FieldError className="col-start-1">
                           {errors.external_links[index].label.message}
                         </FieldError>
                       )}
 
                       {errors?.external_links?.[index]?.url?.message && (
-                        <FieldError>
+                        <FieldError className="col-start-2">
                           {errors.external_links[index].url.message}
                         </FieldError>
                       )}
@@ -434,7 +424,7 @@ export function ProfessionalInfoForm() {
                         </FieldLabel>
                         <Textarea
                           id={`experiences.${index}.description`}
-                          rows={4}
+                          rows={6}
                           placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
                           {...register(`experiences.${index}.description`)}
                         />
@@ -489,7 +479,6 @@ export function ProfessionalInfoForm() {
                               htmlFor={`experiences.${index}.end_date`}
                             >
                               Data de término
-                              <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Input
                               id={`experiences.${index}.end_date`}
@@ -765,42 +754,47 @@ export function ProfessionalInfoForm() {
                         control={control}
                         rules={{ required: "Nível é obrigatório" }}
                         render={({ field }) => (
-                          <Select
-                            name={`languages.${index}.level`}
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                            }}
-                            onOpenChange={(open) => {
-                              if (!open) {
-                                field.onBlur();
-                              }
-                            }}
-                          >
-                            <SelectTrigger aria-invalid>
-                              <SelectValue placeholder="Selecione o nível" />
-                            </SelectTrigger>
+                          <Field className="col-start-2">
+                            <Select
+                              name={`languages.${index}.level`}
+                              value={field.value}
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                              }}
+                              onOpenChange={(open) => {
+                                if (!open) {
+                                  field.onBlur();
+                                }
+                              }}
+                            >
+                              <SelectTrigger aria-invalid>
+                                <SelectValue placeholder="Selecione o nível" />
+                              </SelectTrigger>
 
-                            <SelectContent>
-                              <SelectItem value="beginner">
-                                Iniciante
-                              </SelectItem>
-                              <SelectItem value="intermediate">
-                                Intermediário
-                              </SelectItem>
-                              <SelectItem value="advanced">Avançado</SelectItem>
-                            </SelectContent>
-                          </Select>
+                              <SelectContent>
+                                <SelectItem value="beginner">
+                                  Iniciante
+                                </SelectItem>
+                                <SelectItem value="intermediate">
+                                  Intermediário
+                                </SelectItem>
+                                <SelectItem value="advanced">
+                                  Avançado
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </Field>
                         )}
                       />
 
                       {errors?.languages?.[index]?.name?.message && (
-                        <FieldError>
+                        <FieldError className="col-start-1">
                           {errors.languages[index].name.message}
                         </FieldError>
                       )}
 
                       {errors?.languages?.[index]?.level?.message && (
-                        <FieldError>
+                        <FieldError className="col-start-2">
                           {errors.languages[index].level.message}
                         </FieldError>
                       )}

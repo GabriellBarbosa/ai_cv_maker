@@ -24,9 +24,9 @@ export function ResultCard({
   return (
     <Card className="border border-border/70 bg-card/80 shadow-lg">
       <CardHeader>
-        <CardTitle>Generated Resume</CardTitle>
+        <CardTitle>Currículo gerado!</CardTitle>
         <CardDescription>
-          Download, fine-tune, or plug into your favourite template.
+          Baixe, ajuste ou use no seu template favorito.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -37,7 +37,7 @@ export function ResultCard({
           disabled={!canDownloadResume}
         >
           <Download className="mr-2 h-4 w-4" />
-          Download Resume (.docx)
+          Baixar Currículo (.docx)
         </Button>
         <Button
           onClick={onDownloadCoverLetter}
@@ -46,7 +46,7 @@ export function ResultCard({
           disabled={!canDownloadCoverLetter}
         >
           <Download className="mr-2 h-4 w-4" />
-          Download Cover Letter (.docx)
+          Baixar Carta de Apresentação (.docx)
         </Button>
       </CardContent>
     </Card>

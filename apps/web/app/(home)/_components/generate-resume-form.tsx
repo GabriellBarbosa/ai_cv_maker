@@ -14,18 +14,21 @@ import { Loader2 } from "lucide-react";
 import { StatusCard } from "./status-card";
 import { ErrorCard } from "./error-card";
 import { ResultCard } from "./result-card";
-import { useGenerateForm } from "../_hooks/use-generate-form";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { GenerateFormData, useGenerateForm } from "../_hooks/use-generate-form";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { Controller, UseFormReturn } from "react-hook-form";
 
-export function GenerateForm() {
+interface Props {
+  form: UseFormReturn<GenerateFormData>;
+  triggerCandidateForm: (arg?: any) => Promise<boolean>;
+}
+
+export function GenerateForm({ form, triggerCandidateForm }: Props) {
   const {
-    form,
     error,
     response,
     isLoading,
-    language,
-    tone,
     statusSteps,
     statusStep,
     shouldShowStatus,
@@ -37,13 +40,25 @@ export function GenerateForm() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
+    control,
+    watch,
   } = form;
+
+  console.log(watch());
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(async (data) => {
+          const shouldSubmit = await triggerCandidateForm();
+
+          if (shouldSubmit) {
+            onSubmit(data);
+          }
+        })}
+        className="space-y-6"
+      >
         <Card>
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-semibold">
@@ -65,9 +80,9 @@ export function GenerateForm() {
                 }`}
               />
               {errors.job_text?.message && (
-                <p className="text-sm text-destructive">
+                <FieldError className="text-sm text-destructive">
                   {errors.job_text?.message}
-                </p>
+                </FieldError>
               )}
             </Field>
 
@@ -76,44 +91,55 @@ export function GenerateForm() {
                 <Label className="mb-2 block" htmlFor="language">
                   Idioma do currículo
                 </Label>
-                <Select
-                  value={language}
-                  onValueChange={(value) =>
-                    setValue("language", value as "pt-BR" | "en-US")
-                  }
-                >
-                  <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent className="border border-2 border-gray-600 bg-card">
-                    <SelectItem value="pt-BR">Portuguese (pt-BR)</SelectItem>
-                    <SelectItem value="en-US">English (en-US)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="language"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      name="language"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger id="language">
+                        <SelectValue placeholder="Selecione o idioma" />
+                      </SelectTrigger>
+                      <SelectContent className="border border-2 border-gray-600 bg-card">
+                        <SelectItem value="pt-BR">
+                          Portuguese (pt-BR)
+                        </SelectItem>
+                        <SelectItem value="en-US">English (en-US)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               <div className="space-y-3">
                 <Label className="mb-2 block" htmlFor="tone">
                   Tom
                 </Label>
-                <Select
-                  value={tone}
-                  onValueChange={(value) =>
-                    setValue(
-                      "tone",
-                      value as "profissional" | "neutro" | "criativo",
-                    )
-                  }
-                >
-                  <SelectTrigger id="tone">
-                    <SelectValue placeholder="Select tone" />
-                  </SelectTrigger>
-                  <SelectContent className="border border-2 border-gray-600 bg-card">
-                    <SelectItem value="profissional">Profissional</SelectItem>
-                    <SelectItem value="neutro">Neutro</SelectItem>
-                    <SelectItem value="criativo">Criativo</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="tone"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      name="tone"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger id="tone">
+                        <SelectValue placeholder="Selecione o tom" />
+                      </SelectTrigger>
+                      <SelectContent className="border border-2 border-gray-600 bg-card">
+                        <SelectItem value="profissional">
+                          Profissional
+                        </SelectItem>
+                        <SelectItem value="neutro">Neutro</SelectItem>
+                        <SelectItem value="criativo">Criativo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
             </div>
 
