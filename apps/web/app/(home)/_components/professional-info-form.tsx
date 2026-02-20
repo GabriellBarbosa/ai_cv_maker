@@ -18,15 +18,7 @@ import {
 } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  CheckCircle2Icon,
-  ChevronsUpDown,
-  CircleAlert,
-  CircleCheck,
-  InfoIcon,
-  PlusIcon,
-  Trash,
-} from "lucide-react";
+import { ChevronsUpDown, InfoIcon, PlusIcon, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatMonthYear } from "@/utils/functions/format-month-year";
 import { Checkbox } from "@/components/ui/checkbox";
