@@ -33,37 +33,52 @@ export default function Home() {
 
   return (
     <div>
-      <main className="container mx-auto pb-24 pt-20 grid gap-10 lg:items-start lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-        <section
-          id="generate"
-          className="px-6 lg:sticky lg:top-20 lg:self-start"
-        >
-          <div className="flex flex-col gap-6">
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Traga sua experiência e deixe que a nossa IA cuide do resto.
-            </h2>
-            <p className="text-base text-muted-foreground md:text-lg">
-              Conte sua história, cole descrição da vaga e deixe nossa IA criar
-              um currículo e uma carta de apresentação com a sua cara.
-            </p>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Personalize o tom e o idioma (Inglês ou Português).
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Baixe seu currículo impecável em menos de um minuto.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                Projetado para proporcionar clareza em ambientes escuros e
-                sessões de preparação noturnas.
-              </li>
-            </ul>
+      <header className="pt-6">
+        <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-border/70 bg-background/80 px-4 py-2 shadow-sm backdrop-blur">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+            G
+          </span>
+          <a href="https://portfolio-gabriellbarbosa.vercel.app/pt" target="_blank">
+            <span className="text-sm font-medium tracking-wide text-muted-foreground underline">
+              by Gabriel Barbosa
+            </span>
+          </a>
+        </div>
+      </header>
+
+      <main className="mx-auto pb-24 pt-6 grid gap-10 lg:items-start">
+        <section id="generate">
+          <div className="relative bg-zinc-50 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
+            <div className="max-w-3xl mx-auto relative z-10 py-24 px-4">
+              <div className="flex flex-col gap-6">
+                <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                  Traga sua experiência e deixe que a nossa IA cuide do resto.
+                </h2>
+                <p className="text-base text-muted-foreground md:text-lg">
+                  Conte sua história, cole descrição da vaga e deixe nossa IA
+                  criar um currículo e uma carta de apresentação com a sua cara.
+                </p>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
+                    Personalize o tom e o idioma (Inglês ou Português).
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
+                    Baixe seu currículo impecável em menos de um minuto.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
+                    Projetado para proporcionar clareza em ambientes escuros e
+                    sessões de preparação noturnas.
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
-        <section id="generate" className="lg:px-6 space-y-6">
+        <section id="generate" className="max-w-3xl mx-auto w-full space-y-6">
           <ProfessionalInfoForm form={candidateForm} />
           <GenerateForm
             form={generateResumeForm}
