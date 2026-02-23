@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -125,25 +126,6 @@ export function ProfessionalInfoForm({ form }: Props) {
             <CardDescription>
               Seu perfil profissional é salvo automaticamente.
             </CardDescription>
-            <div>
-              {form.formState.isValid ? (
-                <Alert className="border-green-950 bg-green-50 text-green-950">
-                  <InfoIcon />
-                  <AlertTitle>Tudo certo!</AlertTitle>
-                  <AlertDescription>
-                    Você já pode gerar seu currículo.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <Alert className="border-amber-200 bg-amber-50 text-amber-900">
-                  <InfoIcon />
-                  <AlertTitle>Quase lá!</AlertTitle>
-                  <AlertDescription>
-                    Complete os campos obrigatórios para gerar seu currículo.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
           </CardHeader>
           <CardContent>
             <Collapsible
@@ -866,6 +848,27 @@ export function ProfessionalInfoForm({ form }: Props) {
               </CollapsibleContent>
             </Collapsible>
           </CardContent>
+          <CardFooter>
+              {form.formState.isValid && (
+                <Alert className="border-green-950 bg-green-50 text-green-950">
+                  <InfoIcon />
+                  <AlertTitle>Tudo certo!</AlertTitle>
+                  <AlertDescription>
+                    Você já pode gerar seu currículo.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {!form.formState.isValid && (
+                <Alert>
+                  <InfoIcon />
+                  <AlertTitle>Quase lá!</AlertTitle>
+                  <AlertDescription>
+                    Complete os campos obrigatórios para gerar seu currículo.
+                  </AlertDescription>
+                </Alert>
+              )}
+          </CardFooter>
         </Card>
       </form>
     </FormProvider>

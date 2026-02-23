@@ -36,9 +36,12 @@ export default function Home() {
       <header className="pt-6">
         <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-border/70 bg-background/80 px-4 py-2 shadow-sm backdrop-blur">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-            G
+            GB
           </span>
-          <a href="https://portfolio-gabriellbarbosa.vercel.app/pt" target="_blank">
+          <a
+            href="https://portfolio-gabriellbarbosa.vercel.app/pt"
+            target="_blank"
+          >
             <span className="text-sm font-medium tracking-wide text-muted-foreground underline">
               by Gabriel Barbosa
             </span>
@@ -48,9 +51,17 @@ export default function Home() {
 
       <main className="mx-auto pb-24 pt-6 grid gap-10 lg:items-start">
         <section id="generate">
-          <div className="relative bg-zinc-50 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
-            <div className="max-w-3xl mx-auto relative z-10 py-24 px-4">
+          <div className="relative overflow-hidden bg-white border-b border-zinc-200">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-cyan-500/5 pointer-events-none" />
+
+            {/* Radial highlight */}
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
+
+            <div className="relative z-10 max-w-4xl mx-auto py-28 px-6">
               <div className="flex flex-col gap-6">
                 <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
                   Traga sua experiência e deixe que a nossa IA cuide do resto.
@@ -77,6 +88,10 @@ export default function Home() {
               </div>
             </div>
           </div>
+          {/* <div className="relative bg-zinc-50 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
+            <div className="max-w-3xl mx-auto relative z-10 py-24 px-4"></div>
+          </div> */}
         </section>
         <section id="generate" className="max-w-3xl mx-auto w-full space-y-6">
           <ProfessionalInfoForm form={candidateForm} />
