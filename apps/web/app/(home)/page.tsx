@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { GenerateFormData } from "./_hooks/use-generate-form";
 import { GenerateRequestSchema } from "@/types";
+import { Bot, BrainCircuit, Cpu, File, FileUser, Rocket } from "lucide-react";
 
 export default function Home() {
   const candidateForm = useForm<Candidate>({
@@ -33,19 +34,19 @@ export default function Home() {
 
   return (
     <div>
-      <header className="pt-6">
-        <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-border/70 bg-background/80 px-4 py-2 shadow-sm backdrop-blur">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-            GB
+      <header className="px-4 pt-6 mx-auto max-w-4xl">
+        <div className="group flex items-center gap-2 rounded-full px-2 py-1">
+          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-slate-700 to-indigo-600 text-slate-950 shadow-lg text-primary-foreground">
+            <Bot className="relative z-10 text-white" />
           </span>
-          <a
-            href="https://portfolio-gabriellbarbosa.vercel.app/pt"
-            target="_blank"
-          >
-            <span className="text-sm font-medium tracking-wide text-muted-foreground underline">
-              by Gabriel Barbosa
+          <span className="flex flex-col leading-none">
+            <span className="text-[10px] font-semibold uppercase text-primary/80">
+              AI
             </span>
-          </a>
+            <span className="text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
+              CV MAKER
+            </span>
+          </span>
         </div>
       </header>
 
@@ -62,7 +63,7 @@ export default function Home() {
             <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
 
             <div className="relative z-10 max-w-4xl mx-auto py-28 px-6">
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-6 max-w-3xl">
                 <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
                   Traga sua experiência e deixe que a nossa IA cuide do resto.
                 </h2>
@@ -88,12 +89,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* <div className="relative bg-zinc-50 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
-            <div className="max-w-3xl mx-auto relative z-10 py-24 px-4"></div>
-          </div> */}
         </section>
-        <section id="generate" className="max-w-3xl mx-auto w-full space-y-6">
+        <section id="generate" className="max-w-4xl mx-auto w-full space-y-6">
           <ProfessionalInfoForm form={candidateForm} />
           <GenerateForm
             form={generateResumeForm}
