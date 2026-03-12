@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Gere seu com currículo usando IA",
+  title: "Generate your resume with AI",
   description:
-    "Tenha em mãos um currículo e uma carta de apresentação adequados com o seu perfil e a descrição da vaga",
+    "Create a tailored resume and cover letter based on your profile and the job description.",
 };
 
 export default function RootLayout({
@@ -13,9 +14,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground">
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

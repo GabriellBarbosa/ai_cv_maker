@@ -47,10 +47,10 @@ export function StatusCard({ steps, currentStep }: StatusCardProps) {
     <Card className="border border-primary/40 bg-primary/5 shadow-lg">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">
-          A mágica está acontecendo
+          Generating your documents
         </CardTitle>
         <CardDescription className="text-xs uppercase tracking-wide text-primary/70">
-          Acompanhe o passo a passo.
+          Follow each step.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">

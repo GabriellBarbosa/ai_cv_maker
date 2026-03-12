@@ -21,7 +21,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 
 interface Props {
   form: UseFormReturn<GenerateFormData>;
-  triggerCandidateForm: (arg?: any) => Promise<boolean>;
+  triggerCandidateForm: () => Promise<boolean>;
 }
 
 export function GenerateForm({ form, triggerCandidateForm }: Props) {
@@ -62,16 +62,16 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
         <Card>
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-semibold">
-              Gere seu kit de candidatura.
+              Generate your application kit.
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Field className="space-y-3">
-              <FieldLabel htmlFor="job_text">Descrição da vaga</FieldLabel>
+              <FieldLabel htmlFor="job_text">Job description</FieldLabel>
               <Textarea
                 id="job_text"
                 spellCheck={false}
-                placeholder="As informações sobre a vaga. Quanto mais contexto você adicionar, melhor será o alinhamento."
+                placeholder="Paste the role details. The more context you add, the better the output will align."
                 {...register("job_text")}
                 className={`min-h-[180px] resize-y ${
                   error
@@ -89,7 +89,7 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-3">
                 <Label className="mb-2 block" htmlFor="language">
-                  Idioma do currículo
+                  Resume language
                 </Label>
                 <Controller
                   name="language"
@@ -101,7 +101,7 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger id="language">
-                        <SelectValue placeholder="Selecione o idioma" />
+                        <SelectValue placeholder="Select language" />
                       </SelectTrigger>
                       <SelectContent className="border border-2 border-gray-600 bg-card">
                         <SelectItem value="pt-BR">
@@ -116,7 +116,7 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
 
               <div className="space-y-3">
                 <Label className="mb-2 block" htmlFor="tone">
-                  Tom
+                  Tone
                 </Label>
                 <Controller
                   name="tone"
@@ -128,14 +128,14 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger id="tone">
-                        <SelectValue placeholder="Selecione o tom" />
+                        <SelectValue placeholder="Select tone" />
                       </SelectTrigger>
                       <SelectContent className="border border-2 border-gray-600 bg-card">
                         <SelectItem value="profissional">
-                          Profissional
+                          Professional
                         </SelectItem>
-                        <SelectItem value="neutro">Neutro</SelectItem>
-                        <SelectItem value="criativo">Criativo</SelectItem>
+                        <SelectItem value="neutro">Neutral</SelectItem>
+                        <SelectItem value="criativo">Creative</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -152,10 +152,10 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Gerando...
+                  Generating...
                 </span>
               ) : (
-                "Gerar currículo e carta de apresentação"
+                "Generate"
               )}
             </Button>
           </CardContent>

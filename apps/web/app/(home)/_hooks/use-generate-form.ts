@@ -31,7 +31,7 @@ export function useGenerateForm() {
   const [statusStep, setStatusStep] = useState<number | null>(null);
 
   const statusSteps = useMemo<StatusStep[]>(
-    () => [{ label: "Extraindo requisitos" }, { label: "Gerando conteúdo" }],
+    () => [{ label: "Extracting requirements" }, { label: "Generating content" }],
     [],
   );
 

@@ -3,7 +3,7 @@ import { z } from "zod";
 // Generate Request Schema
 export const GenerateRequestSchema = z.object({
   candidate_text: z.string().optional(),
-  job_text: z.string().trim().min(1, "Descrição da vaga é obrigatório"),
+  job_text: z.string().trim().min(1, "Job description is required"),
   language: z.enum(["pt-BR", "en-US"]).default("pt-BR"),
   tone: z.enum(["profissional", "neutro", "criativo"]).default("profissional"),
   format: z.enum(["docx"]).default("docx"),

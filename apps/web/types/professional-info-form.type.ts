@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 const requiredText = (label: string) =>
-  z.string().trim().min(1, `${label} é obrigatório`);
+  z.string().trim().min(1, `${label} is required`);
 
 const beginDate = z
   .string()
   .trim()
-  .min(1, "Data de início é obrigatório")
-  .regex(/^(0[1-9]|1[0-2])\/\d{4}$/, "Use o formato mês/ano. Ex.: 02/2026");
+  .min(1, "Start date is required")
+  .regex(/^(0[1-9]|1[0-2])\/\d{4}$/, "Use MM/YYYY format. Example: 02/2026");
 
 const endDate = z
   .string()
@@ -21,35 +21,35 @@ const endDate = z
 
 export const CandidateSchema = z.object({
   profile: z.object({
-    name: requiredText("Nome"),
-    professional_title: requiredText("Cargo"),
-    candidate_introduction: requiredText("Apresente-se"),
+    name: requiredText("Full name"),
+    professional_title: requiredText("Job title"),
+    candidate_introduction: requiredText("Introduction"),
     skills: z.array(z.string()),
     email: z
       .string()
-      .min(1, { message: "E-mail é obrigatório" })
-      .email("E-mail inválido"),
+      .min(1, { message: "Email is required" })
+      .email("Invalid email"),
     phone: z
       .string()
       .trim()
-      .min(1, "Celular é obrigatório")
-      .regex(/^[+\d\s().-]+$/, "Celular inválido")
+      .min(1, "Phone is required")
+      .regex(/^[+\d\s().-]+$/, "Invalid phone number")
       .refine(
         (v) =>
           v.replace(/\D/g, "").length >= 10 &&
           v.replace(/\D/g, "").length <= 15,
         {
-          message: "Celular deve ter de 10 a 15 dígitos",
+          message: "Phone number must have 10 to 15 digits",
         },
       ),
-    state: requiredText("Estado"),
-    city: requiredText("Cidade"),
+    state: requiredText("State"),
+    city: requiredText("City"),
   }),
 
   external_links: z
     .array(
       z.object({
-        label: requiredText("Nome do link"),
+        label: requiredText("Link label"),
         url: requiredText("URL").url(),
       }),
     )
@@ -58,12 +58,12 @@ export const CandidateSchema = z.object({
   experiences: z
     .array(
       z.object({
-        company: requiredText("Empresa"),
-        role: requiredText("Cargo"),
+        company: requiredText("Company"),
+        role: requiredText("Role"),
         start_date: beginDate,
         end_date: endDate,
         current_job: z.boolean(),
-        description: requiredText("Descrição de atividades"),
+        description: requiredText("Role description"),
         skills: z.array(z.string()),
       }),
     )
@@ -72,8 +72,8 @@ export const CandidateSchema = z.object({
   education: z
     .array(
       z.object({
-        institution: requiredText("Instituição de ensino"),
-        degree: requiredText("Curso"),
+        institution: requiredText("Institution"),
+        degree: requiredText("Degree"),
         in_progress: z.boolean(),
         start_date: beginDate,
         end_date: endDate,
@@ -84,8 +84,8 @@ export const CandidateSchema = z.object({
   languages: z
     .array(
       z.object({
-        name: requiredText("Idioma"),
-        level: requiredText("Nível"),
+        name: requiredText("Language"),
+        level: requiredText("Level"),
       }),
     )
     .optional(),

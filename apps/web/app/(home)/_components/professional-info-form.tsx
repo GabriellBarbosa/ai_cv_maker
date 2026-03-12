@@ -19,7 +19,16 @@ import {
 } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ChevronsUpDown, InfoIcon, PlusIcon, Trash } from "lucide-react";
+import {
+  Check,
+  CheckCheckIcon,
+  CheckCircle,
+  CheckCircle2,
+  ChevronsUpDown,
+  InfoIcon,
+  PlusIcon,
+  Trash,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatMonthYear } from "@/utils/functions/format-month-year";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -111,7 +120,7 @@ export function ProfessionalInfoForm({ form }: Props) {
       const data = JSON.parse(raw);
       form.reset(data);
     } catch {
-      console.error("Perfil profissional deve estar corrompido");
+      console.error("Professional profile may be corrupted");
     }
   }, [form]);
 
@@ -121,10 +130,10 @@ export function ProfessionalInfoForm({ form }: Props) {
         <Card className="relative">
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-semibold">
-              Seu perfil profissional
+              Your professional profile
             </CardTitle>
             <CardDescription>
-              Seu perfil profissional é salvo automaticamente.
+              Your professional profile is saved automatically.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -133,7 +142,11 @@ export function ProfessionalInfoForm({ form }: Props) {
               onOpenChange={setCollapsibleIsOpen}
             >
               <CollapsibleTrigger asChild className="absolute top-6 right-6">
-                <Button variant="ghost" size="icon" className="size-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 cursor-pointer"
+                >
                   <ChevronsUpDown />
                   <span className="sr-only">Toggle details</span>
                 </Button>
@@ -141,13 +154,13 @@ export function ProfessionalInfoForm({ form }: Props) {
               <CollapsibleContent className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <Label>Perfil</Label>
+                    <Label>Profile</Label>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
                       <Field>
                         <FieldLabel htmlFor="profile.name">
-                          Nome completo
+                          Full name
                           <span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
@@ -164,7 +177,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                       </Field>
                       <Field>
                         <FieldLabel htmlFor="profile.professional_title">
-                          Cargo<span className="text-destructive">*</span>
+                          Job title<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id="profile.professional_title"
@@ -182,7 +195,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                     <div className="flex flex-col gap-y-6 gap-x-4 sm:flex-row">
                       <Field>
                         <FieldLabel htmlFor="profile.email">
-                          E-mail<span className="text-destructive">*</span>
+                          Email<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id="profile.email"
@@ -197,7 +210,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                       </Field>
                       <Field>
                         <FieldLabel htmlFor="profile.phone">
-                          Celular<span className="text-destructive">*</span>
+                          Phone<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id="profile.phone"
@@ -216,7 +229,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                     <div className="flex gap-y-6 gap-x-4 flex-row">
                       <Field>
                         <FieldLabel htmlFor="profile.state">
-                          Estado<span className="text-destructive">*</span>
+                          State<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id="profile.state"
@@ -231,7 +244,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                       </Field>
                       <Field>
                         <FieldLabel htmlFor="profile.city">
-                          Cidade<span className="text-destructive">*</span>
+                          City<span className="text-destructive">*</span>
                         </FieldLabel>
                         <Input
                           id="profile.city"
@@ -245,12 +258,12 @@ export function ProfessionalInfoForm({ form }: Props) {
                     </div>
                     <Field>
                       <FieldLabel htmlFor="profile.candidate_introduction">
-                        Apresente-se<span className="text-destructive">*</span>
+                        Introduction<span className="text-destructive">*</span>
                       </FieldLabel>
                       <Textarea
                         id="profile.candidate_introduction"
                         rows={6}
-                        placeholder="Ex.: Desenvolvedor Full Stack com 3+ anos de experiência em React, Node.js e PostgreSQL, focado em performance e boas práticas."
+                        placeholder="Example: Full-Stack Developer with 3+ years of experience in React, Node.js, and PostgreSQL, focused on performance and best practices."
                         {...register("profile.candidate_introduction")}
                       />
                       {errors?.profile?.candidate_introduction?.message && (
@@ -261,12 +274,10 @@ export function ProfessionalInfoForm({ form }: Props) {
                     </Field>
 
                     <Field>
-                      <FieldLabel htmlFor={`profile.skills`}>
-                        Habilidades
-                      </FieldLabel>
+                      <FieldLabel htmlFor={`profile.skills`}>Skills</FieldLabel>
                       <TagsInput
                         name={`profile.skills`}
-                        placeholder="Ex.: React, NestJS, PostgreSQL (Enter para adicionar)"
+                        placeholder="Example: React, NestJS, PostgreSQL (press Enter to add)"
                         maxTags={20}
                       />
                     </Field>
@@ -277,7 +288,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                   <CardHeader>
                     <div className="flex justify-between items-center">
                       <div>
-                        <Label>LinkedIn, portfólio e outros links</Label>
+                        <Label>LinkedIn, portfolio, and other links</Label>
                       </div>
                       <Button
                         type="button"
@@ -295,8 +306,8 @@ export function ProfessionalInfoForm({ form }: Props) {
                     <div className="space-y-6">
                       {!externalLinks?.length && (
                         <p className="text-base text-muted-foreground md:text-lg">
-                          Adicione links úteis como seu LinkedIn, site de
-                          portfólio, etc.
+                          Add useful links such as LinkedIn, portfolio website,
+                          and more.
                         </p>
                       )}
 
@@ -307,7 +318,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                         >
                           {index === 0 && (
                             <FieldLabel>
-                              Nome<span className="text-destructive">*</span>
+                              Name<span className="text-destructive">*</span>
                             </FieldLabel>
                           )}
 
@@ -334,7 +345,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                           <Input
                             type="text"
                             className="col-start-1"
-                            placeholder="Ex.: LinkedIn"
+                            placeholder="Example: LinkedIn"
                             {...register(`external_links.${index}.label`)}
                           />
 
@@ -364,7 +375,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                 <Card>
                   <CardHeader>
                     <div className="flex justify-between items-center">
-                      <Label>Experiências profissionais</Label>
+                      <Label>Work experience</Label>
                       <Button
                         type="button"
                         size="icon"
@@ -390,7 +401,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                     <div className="space-y-6">
                       {!experiences?.length && (
                         <p className="text-base text-muted-foreground md:text-lg">
-                          Adicione uma experiência profissional.
+                          Add a work experience entry.
                         </p>
                       )}
 
@@ -398,9 +409,9 @@ export function ProfessionalInfoForm({ form }: Props) {
                         <div className="flex-1 space-y-4" key={field.id}>
                           <div className="flex items-center justify-between">
                             <p className="font-bold">
-                              Experiência{" "}
+                              Experience{" "}
                               {experiences.length > 1
-                                ? `${index + 1} de ${experiences.length}`
+                                ? `${index + 1} of ${experiences.length}`
                                 : ``}
                             </p>
                             <Button
@@ -418,7 +429,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                             <FieldLabel
                               htmlFor={`experiences.${index}.company`}
                             >
-                              Empresa<span className="text-destructive">*</span>
+                              Company<span className="text-destructive">*</span>
                             </FieldLabel>
                             <Input
                               id={`experiences.${index}.company`}
@@ -433,7 +444,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                           </Field>
                           <Field>
                             <FieldLabel htmlFor={`experiences.${index}.role`}>
-                              Cargo<span className="text-destructive">*</span>
+                              Role<span className="text-destructive">*</span>
                             </FieldLabel>
                             <Input
                               id={`experiences.${index}.role`}
@@ -450,13 +461,13 @@ export function ProfessionalInfoForm({ form }: Props) {
                             <FieldLabel
                               htmlFor={`experiences.${index}.description`}
                             >
-                              Descrição de atividades
+                              Role description
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Textarea
                               id={`experiences.${index}.description`}
                               rows={6}
-                              placeholder="Descreva suas principais responsabilidades, projetos e resultados alcançados."
+                              placeholder="Describe your main responsibilities, projects, and outcomes."
                               {...register(`experiences.${index}.description`)}
                             />
                             {errors?.experiences?.[index]?.description
@@ -469,11 +480,11 @@ export function ProfessionalInfoForm({ form }: Props) {
 
                           <Field>
                             <FieldLabel htmlFor={`experiences.${index}.skills`}>
-                              Habilidades utilizadas
+                              Skills used
                             </FieldLabel>
                             <TagsInput
                               name={`experiences.${index}.skills`}
-                              placeholder="Ex.: React, NestJS, PostgreSQL (Enter para adicionar)"
+                              placeholder="Example: React, NestJS, PostgreSQL (press Enter to add)"
                               maxTags={20}
                             />
                           </Field>
@@ -482,13 +493,13 @@ export function ProfessionalInfoForm({ form }: Props) {
                               <FieldLabel
                                 htmlFor={`experiences.${index}.start_date`}
                               >
-                                Data de início
+                                Start date
                                 <span className="text-destructive">*</span>
                               </FieldLabel>
                               <Input
                                 id={`experiences.${index}.start_date`}
                                 type="text"
-                                placeholder="Ex.: 02/2026"
+                                placeholder="Example: 02/2026"
                                 {...register(`experiences.${index}.start_date`)}
                                 onChange={(e) =>
                                   setValue(
@@ -510,12 +521,12 @@ export function ProfessionalInfoForm({ form }: Props) {
                                 <FieldLabel
                                   htmlFor={`experiences.${index}.end_date`}
                                 >
-                                  Data de término
+                                  End date
                                 </FieldLabel>
                                 <Input
                                   id={`experiences.${index}.end_date`}
                                   type="text"
-                                  placeholder="Ex.: 02/2026"
+                                  placeholder="Example: 02/2026"
                                   disabled={getValues(
                                     `experiences.${index}.current_job`,
                                   )}
@@ -551,7 +562,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                                 <FieldLabel
                                   htmlFor={`experiences.${index}.current_job`}
                                 >
-                                  Este é meu trabalho atual
+                                  This is my current role
                                 </FieldLabel>
                               </Field>
                             </div>
@@ -565,7 +576,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                 <Card>
                   <CardHeader>
                     <div className="flex justify-between items-center">
-                      <Label>Formação Acadêmica</Label>
+                      <Label>Education</Label>
                       <Button
                         type="button"
                         size="icon"
@@ -589,7 +600,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                     <div className="space-y-6">
                       {!education?.length && (
                         <p className="text-base text-muted-foreground md:text-lg">
-                          Adicione uma formação acadêmica.
+                          Add an education entry.
                         </p>
                       )}
 
@@ -597,9 +608,9 @@ export function ProfessionalInfoForm({ form }: Props) {
                         <div className="flex-1 space-y-4" key={field.id}>
                           <div className="flex items-center justify-between">
                             <p className="font-bold">
-                              Formação{" "}
+                              Education{" "}
                               {education.length > 1
-                                ? `${index + 1} de ${education.length}`
+                                ? `${index + 1} of ${education.length}`
                                 : ``}
                             </p>
                             <Button
@@ -615,7 +626,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                           </div>
                           <Field>
                             <FieldLabel htmlFor={`education.${index}.degree`}>
-                              Curso
+                              Degree
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Input
@@ -633,7 +644,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                             <FieldLabel
                               htmlFor={`education.${index}.institution`}
                             >
-                              Instituição de ensino
+                              Institution
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                             <Input
@@ -653,13 +664,13 @@ export function ProfessionalInfoForm({ form }: Props) {
                               <FieldLabel
                                 htmlFor={`education.${index}.start_date`}
                               >
-                                Data de início
+                                Start date
                                 <span className="text-destructive">*</span>
                               </FieldLabel>
                               <Input
                                 id={`education.${index}.start_date`}
                                 type="text"
-                                placeholder="Ex.: 02/2026"
+                                placeholder="Example: 02/2026"
                                 {...register(`education.${index}.start_date`)}
                                 onChange={(e) =>
                                   setValue(
@@ -681,12 +692,12 @@ export function ProfessionalInfoForm({ form }: Props) {
                                 <FieldLabel
                                   htmlFor={`education.${index}.end_date`}
                                 >
-                                  Data de término
+                                  End date
                                 </FieldLabel>
                                 <Input
                                   id={`education.${index}.end_date`}
                                   type="text"
-                                  placeholder="Ex.: 02/2026"
+                                  placeholder="Example: 02/2026"
                                   {...register(`education.${index}.end_date`)}
                                   onChange={(e) =>
                                     setValue(
@@ -713,7 +724,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                                 <FieldLabel
                                   htmlFor={`education.${index}.in_progress`}
                                 >
-                                  Em andamento
+                                  In progress
                                 </FieldLabel>
                               </Field>
                             </div>
@@ -728,7 +739,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                   <CardHeader>
                     <div className="flex justify-between items-center">
                       <div>
-                        <Label>Idiomas</Label>
+                        <Label>Languages</Label>
                       </div>
                       <Button
                         type="button"
@@ -746,7 +757,7 @@ export function ProfessionalInfoForm({ form }: Props) {
                     <div className="space-y-6">
                       {!languages?.length && (
                         <p className="text-base text-muted-foreground md:text-lg">
-                          Adicione os idiomas que você fala.
+                          Add the languages you speak.
                         </p>
                       )}
 
@@ -757,14 +768,14 @@ export function ProfessionalInfoForm({ form }: Props) {
                         >
                           {index === 0 && (
                             <FieldLabel htmlFor={`languages.${index}.name`}>
-                              Idioma
+                              Language
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                           )}
 
                           {index === 0 && (
                             <FieldLabel htmlFor={`languages.${index}.level`}>
-                              Nível
+                              Level
                               <span className="text-destructive">*</span>
                             </FieldLabel>
                           )}
@@ -787,14 +798,14 @@ export function ProfessionalInfoForm({ form }: Props) {
                             className="col-start-1"
                             id={`languages.${index}.name`}
                             type="text"
-                            placeholder="Ex.: English"
+                            placeholder="Example: English"
                             {...register(`languages.${index}.name`)}
                           />
 
                           <Controller
                             name={`languages.${index}.level`}
                             control={control}
-                            rules={{ required: "Nível é obrigatório" }}
+                            rules={{ required: "Level is required" }}
                             render={({ field }) => (
                               <Field className="col-start-2">
                                 <Select
@@ -810,18 +821,18 @@ export function ProfessionalInfoForm({ form }: Props) {
                                   }}
                                 >
                                   <SelectTrigger aria-invalid>
-                                    <SelectValue placeholder="Selecione o nível" />
+                                    <SelectValue placeholder="Select level" />
                                   </SelectTrigger>
 
                                   <SelectContent>
                                     <SelectItem value="beginner">
-                                      Iniciante
+                                      Beginner
                                     </SelectItem>
                                     <SelectItem value="intermediate">
-                                      Intermediário
+                                      Intermediate
                                     </SelectItem>
                                     <SelectItem value="advanced">
-                                      Avançado
+                                      Advanced
                                     </SelectItem>
                                   </SelectContent>
                                 </Select>
@@ -849,25 +860,26 @@ export function ProfessionalInfoForm({ form }: Props) {
             </Collapsible>
           </CardContent>
           <CardFooter>
-              {form.formState.isValid && (
-                <Alert className="border-green-950 bg-green-50 text-green-950">
-                  <InfoIcon />
-                  <AlertTitle>Tudo certo!</AlertTitle>
-                  <AlertDescription>
-                    Você já pode gerar seu currículo.
-                  </AlertDescription>
-                </Alert>
-              )}
+            {form.formState.isValid && (
+              <Alert className="text-green-300">
+                <CheckCircle2 />
+                <AlertTitle>All set!</AlertTitle>
+                <AlertDescription>
+                  Now you can paste the job description and generate your
+                  resume.
+                </AlertDescription>
+              </Alert>
+            )}
 
-              {!form.formState.isValid && (
-                <Alert>
-                  <InfoIcon />
-                  <AlertTitle>Quase lá!</AlertTitle>
-                  <AlertDescription>
-                    Complete os campos obrigatórios para gerar seu currículo.
-                  </AlertDescription>
-                </Alert>
-              )}
+            {!form.formState.isValid && (
+              <Alert>
+                <InfoIcon />
+                <AlertTitle>Almost there!</AlertTitle>
+                <AlertDescription>
+                  Complete the required fields to generate your resume.
+                </AlertDescription>
+              </Alert>
+            )}
           </CardFooter>
         </Card>
       </form>

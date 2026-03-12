@@ -28,7 +28,7 @@ export function useRHFFormPersistence<T extends FieldValues>({
         localStorage.setItem(storageKey, JSON.stringify(debounced));
       }
     } catch {
-      console.error("Erro ao salvar perfil profissional");
+      console.error("Error saving professional profile");
     }
   }, [debounced, storageKey]);
 }
