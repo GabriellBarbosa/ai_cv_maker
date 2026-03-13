@@ -76,10 +76,10 @@ export class ResumeDocxBuilder {
           properties: {
             page: {
               margin: {
-                top: convertInchesToTwip(0.75),
-                right: convertInchesToTwip(0.75),
-                bottom: convertInchesToTwip(0.75),
-                left: convertInchesToTwip(0.75),
+                top: convertInchesToTwip(0.4),
+                right: convertInchesToTwip(0.4),
+                bottom: convertInchesToTwip(0.4),
+                left: convertInchesToTwip(0.4),
               },
             },
           },
