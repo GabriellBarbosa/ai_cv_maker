@@ -65,8 +65,8 @@ class Education(BaseModel):
 # Language Schema
 class Language(BaseModel):
     name: str = Field(..., min_length=1, description="Language name is required")
-    level: Literal["A2", "B1", "B2", "C1", "C2", "Nativo"] = Field(
-        ..., description="Level must be one of: A2, B1, B2, C1, C2, Nativo"
+    level: str = Field(
+        ..., description="Level is required"
     )
 
 
