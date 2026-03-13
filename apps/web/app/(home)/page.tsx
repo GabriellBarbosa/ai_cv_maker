@@ -132,6 +132,24 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      <footer className="mx-auto mt-12 max-w-6xl pb-8">
+        <div className="flex flex-col items-center justify-between gap-2 rounded-2xl border border-border/70  px-4 py-4 text-center text-sm text-muted-foreground backdrop-blur-sm sm:flex-row sm:text-left">
+          <p className="italic">
+            Created by{" "}
+            <span className="font-medium text-foreground">Gabriel Barbosa</span>
+            .
+          </p>
+          <a
+            href="https://github.com/GabriellBarbosa"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
+          >
+            github.com/GabriellBarbosa
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
