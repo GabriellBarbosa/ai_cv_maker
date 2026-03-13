@@ -45,8 +45,6 @@ export function GenerateForm({ form, triggerCandidateForm }: Props) {
     watch,
   } = form;
 
-  console.log(watch());
-
   return (
     <div className="space-y-6">
       <form
