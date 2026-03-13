@@ -45,7 +45,7 @@ const ExperienceSchema = z.object({
   end_date: z.string().regex(/^\d{4}-\d{2}$|^Atual$/, 'End date must be in YYYY-MM format or "Atual"'),
   location: z.string().min(1, 'Location is required'),
   bullets: z.array(z.string().min(1)).min(1, 'At least one bullet point is required'),
-  tech_stack: z.array(z.string().min(1)).default([]),
+  skills: z.array(z.string().min(1)).default([]),
 });
 ```
 
@@ -58,7 +58,7 @@ class Experience(BaseModel):
     end_date: str = Field(..., description='End date must be in YYYY-MM format or "Atual"')
     location: str = Field(..., min_length=1, description="Location is required")
     bullets: List[str] = Field(..., min_length=1, description="At least one bullet point is required")
-    tech_stack: List[str] = Field(default_factory=list)
+    skills: List[str] = Field(default_factory=list)
 
     @field_validator('start_date')
     @classmethod
@@ -92,7 +92,7 @@ class Experience(BaseModel):
 - ✅ Same regex patterns for dates
 - ✅ Same "Atual" keyword support for end_date
 - ✅ Same minimum array length (bullets must have at least 1 item)
-- ✅ Same default value for tech_stack (empty array)
+- ✅ Same default value for skills (empty array)
 - ✅ Same validation for non-empty strings in arrays
   - TypeScript: `z.array(z.string().min(1))` validates each string is non-empty
   - Python: Custom validator checks each bullet string is non-empty
@@ -218,7 +218,7 @@ Both implementations have been tested with identical test cases:
 
 ### ✅ Edge Cases
 - [x] "Atual" accepted as end_date in Experience
-- [x] Empty arrays accepted for optional fields (education, languages, tech_stack)
+- [x] Empty arrays accepted for optional fields (education, languages, skills)
 - [x] Default values applied correctly
 
 ## Conclusion

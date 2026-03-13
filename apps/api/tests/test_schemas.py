@@ -12,7 +12,7 @@ def _valid_experience(**overrides):
         "end_date": "2023-06",
         "location": "Remote",
         "bullets": ["Implemented feature X"],
-        "tech_stack": ["Python", "FastAPI"],
+        "skills": ["Python", "FastAPI"],
     }
     base.update(overrides)
     return Experience(**base)

@@ -102,7 +102,7 @@ export default function Home() {
 
         <section
           id="generate"
-          className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)] mt-[-60px]"
+          className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)] mt-[-40px] sm:mt-[-60px]"
         >
           <aside className="rounded-2xl border border-border/80 bg-card/40 p-5 backdrop-blur-sm lg:sticky lg:top-6">
             <p className="text-sm font-semibold tracking-wide text-primary">

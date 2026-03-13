@@ -147,7 +147,7 @@ curl -X POST http://localhost:8000/v1/generate \
       "end_date": "Atual",
       "location": "São Paulo, Brasil",
       "bullets": ["Achievement 1", "Achievement 2"],
-      "tech_stack": ["Python", "FastAPI"]
+      "skills": ["Python", "FastAPI"]
     }
   ],
   "education": [

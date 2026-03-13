@@ -16,23 +16,16 @@ class Experience(BaseModel):
     company: str = Field(..., min_length=1, description="Company name is required")
     role: str = Field(..., min_length=1, description="Role is required")
     start_date: str = Field(..., description="Start date must be in YYYY-MM format")
-    end_date: str = Field(..., description='End date must be in YYYY-MM format or "Atual"')
+    end_date: str = Field(..., description='End date must be in YYYY-MM format or "Atual" or "Present"')
     location: Optional[str] = Field(default=None, description="Location is optional")
     bullets: List[str] = Field(..., min_length=1, description="At least one bullet point is required")
-    tech_stack: List[str] = Field(default_factory=list)
+    skills: List[str] = Field(default_factory=list)
 
     @field_validator('start_date')
     @classmethod
     def validate_start_date(cls, v: str) -> str:
         if not re.match(r'^\d{4}-\d{2}$', v):
             raise ValueError('Start date must be in YYYY-MM format')
-        return v
-
-    @field_validator('end_date')
-    @classmethod
-    def validate_end_date(cls, v: str) -> str:
-        if not re.match(r'^\d{4}-\d{2}$|^Atual$', v):
-            raise ValueError('End date must be in YYYY-MM format or "Atual"')
         return v
 
     @field_validator('location')

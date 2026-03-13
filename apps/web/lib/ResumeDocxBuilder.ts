@@ -311,7 +311,7 @@ export class ResumeDocxBuilder {
       });
 
       // Tech stack if available
-      if (exp.tech_stack && exp.tech_stack.length > 0) {
+      if (exp.skills && exp.skills.length > 0) {
         paragraphs.push(
           new Paragraph({
             children: [
@@ -320,7 +320,7 @@ export class ResumeDocxBuilder {
                 italics: true,
               }),
               new TextRun({
-                text: exp.tech_stack.join(", "),
+                text: exp.skills.join(", "),
               }),
             ],
             spacing: {
@@ -443,14 +443,14 @@ export class ResumeDocxBuilder {
   }
 
   /**
-   * Creates the Skills section if tech_stack is present
+   * Creates the Skills section if skills is present
    */
   private createSkillsSection(): Paragraph[] {
-    // Collect all unique skills from tech_stack across all experiences
+    // Collect all unique skills from skills across all experiences
     const allSkills = new Set<string>();
     this.resume.experiences.forEach((exp) => {
-      if (exp.tech_stack) {
-        exp.tech_stack.forEach((skill) => allSkills.add(skill));
+      if (exp.skills) {
+        exp.skills.forEach((skill) => allSkills.add(skill));
       }
     });
 

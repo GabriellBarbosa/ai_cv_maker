@@ -123,7 +123,7 @@ curl -X POST http://localhost:8000/v1/generate \
         "start_date": "2021-01",
         "end_date": "Atual",
         "bullets": ["..."],
-        "tech_stack": ["Python", "FastAPI"]
+        "skills": ["Python", "FastAPI"]
       }
     ],
     "education": [],

@@ -102,7 +102,7 @@ Generates only the cover letter.
       "end_date": "YYYY-MM | Atual",
       "location": "string",
       "bullets": ["string"],
-      "tech_stack": ["string"]
+      "skills": ["string"]
     }
   ],
   "education": [

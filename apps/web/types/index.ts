@@ -28,7 +28,7 @@ export const ExperienceSchema = z.object({
   bullets: z
     .array(z.string().min(1))
     .min(1, "At least one bullet point is required"),
-  tech_stack: z.array(z.string().min(1)).default([]),
+  skills: z.array(z.string().min(1)).default([]),
 });
 
 export type Experience = z.infer<typeof ExperienceSchema>;

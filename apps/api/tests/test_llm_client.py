@@ -66,7 +66,7 @@ def test_validate_and_clean_json_removes_empty_fields():
                 "company": "Acme",
                 "location": " ",
                 "bullets": ["Built system", ""],
-                "tech_stack": [],
+                "skills": [],
             }
         ],
         "languages": [],
@@ -127,7 +127,7 @@ def test_generate_resume_json_parses_llm_response(monkeypatch):
                 "end_date": "Atual",
                 "location": "Remote",
                 "bullets": ["Built APIs."],
-                "tech_stack": ["Python", "FastAPI"],
+                "skills": ["Python", "FastAPI"],
             }
         ],
         "education": [

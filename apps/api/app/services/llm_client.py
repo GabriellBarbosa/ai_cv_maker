@@ -18,7 +18,6 @@ from app.core.schemas import (
     ResumeResponse,
     CoverLetterResponse,
 )
-from app.core.normalization import normalize_resume_payload
 
 from app.prompts.load_md_prompt import (
     load_raw_text_normalization_prompt,
@@ -96,7 +95,7 @@ def extract_payload(
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4.1",
             messages=[
                 {"role": "system", "content": system_prompt},
             ],
@@ -198,7 +197,7 @@ def generate_resume_json(
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4.1",
             messages=[
                 {"role": "system", "content": system_prompt},
             ],
@@ -213,23 +212,9 @@ def generate_resume_json(
         resume_data = json.loads(content)
         
         validated_data = _validate_and_clean_json(resume_data)
-        try:
-            normalized_data = normalize_resume_payload(validated_data, job_text=job_text)
-        except ValueError as e:
-            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
-            log_event(
-                "llm_call_failed",
-                logger=logger,
-                level=logging.ERROR,
-                step="generate_resume_json",
-                error="normalization_error",
-                details=str(e),
-                duration_ms=duration_ms,
-            )
-            raise LLMClientError(f"Failed to normalize resume data: {e}") from e
         
         # Validate with Pydantic schema
-        resume = ResumeResponse(**normalized_data)
+        resume = ResumeResponse(**validated_data)
 
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
         record_llm_usage(
@@ -239,7 +224,6 @@ def generate_resume_json(
             model=response.model if hasattr(response, "model") else None,
             logger=logger,
         )
-
         log_event(
             "resume_generated",
             logger=logger,
@@ -247,6 +231,7 @@ def generate_resume_json(
             status="success",
             duration_ms=duration_ms,
         )
+        
         return resume
         
     except json.JSONDecodeError as e:
@@ -344,7 +329,7 @@ def generate_cover_text(
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4.1",
             messages=[
                 {"role": "system", "content": system_prompt},
             ],

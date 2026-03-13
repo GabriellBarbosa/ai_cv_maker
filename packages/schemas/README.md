@@ -48,7 +48,7 @@ Professional experience entry.
 - `end_date` (string, required): End date in YYYY-MM format or "Atual" (current)
 - `location` (string, required): Work location
 - `bullets` (array of strings, required): Key achievements/responsibilities (min 1)
-- `tech_stack` (array of strings, optional): Technologies used
+- `skills` (array of strings, optional): Technologies used
 
 ### Education
 
