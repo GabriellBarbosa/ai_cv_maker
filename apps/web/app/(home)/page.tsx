@@ -50,8 +50,8 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-10 pb-20 pt-8 lg:gap-14">
-        <section className="relative overflow-hidden rounded-3xl px-4 pt-16 pb-40">
+      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-10 pt-8 lg:gap-14">
+        <section className="relative overflow-hidden rounded-3xl px-4 pt-16 pb-8">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(55%_45%_at_50%_0%,oklch(0.62_0.16_264_/_0.22),transparent_70%)]" />
           <div className="pointer-events-none absolute top-0 left-1/2 h-[460px] w-[860px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute inset-0 opacity-[0.04] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:22px_22px]" />
@@ -102,7 +102,7 @@ export default function Home() {
 
         <section
           id="generate"
-          className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)] mt-[-100px] sm:mt-[-60px]"
+          className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"
         >
           <aside className="rounded-2xl border border-border/80 bg-card/40 p-5 backdrop-blur-sm lg:sticky lg:top-6">
             <p className="text-sm font-semibold tracking-wide text-primary">
