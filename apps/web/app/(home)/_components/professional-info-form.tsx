@@ -20,9 +20,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
-  Check,
-  CheckCheckIcon,
-  CheckCircle,
   CheckCircle2,
   ChevronsUpDown,
   InfoIcon,
@@ -99,6 +96,15 @@ export function ProfessionalInfoForm({ form }: Props) {
   } = useFieldArray({
     control,
     name: "languages",
+  });
+
+  const {
+    fields: projects,
+    insert: insertProject,
+    remove: removeProject,
+  } = useFieldArray({
+    control,
+    name: "projects",
   });
 
   useRHFFormPersistence({
@@ -851,6 +857,140 @@ export function ProfessionalInfoForm({ form }: Props) {
                               {errors.languages[index].level.message}
                             </FieldError>
                           )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <Label>Projects</Label>
+                      <Button
+                        type="button"
+                        size="icon"
+                        aria-label="Add a project"
+                        onClick={() =>
+                          insertProject(0, {
+                            title: "",
+                            description: "",
+                            link: "",
+                            bullets: [],
+                            techStack: [],
+                          })
+                        }
+                      >
+                        <PlusIcon />
+                      </Button>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="space-y-6">
+                      {!projects?.length && (
+                        <p className="text-base text-muted-foreground md:text-lg">
+                          Add personal, freelance, academic, or open-source
+                          projects when they strengthen your resume.
+                        </p>
+                      )}
+
+                      {projects?.map((field, index) => (
+                        <div className="flex-1 space-y-4" key={field.id}>
+                          <div className="flex items-center justify-between">
+                            <p className="font-bold">
+                              Project{" "}
+                              {projects.length > 1
+                                ? `${index + 1} of ${projects.length}`
+                                : ``}
+                            </p>
+                            <Button
+                              type="button"
+                              className="self-end rounded-full"
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Remove project"
+                              onClick={() => removeProject(index)}
+                            >
+                              <Trash className="text-red-500" />
+                            </Button>
+                          </div>
+
+                          <Field>
+                            <FieldLabel htmlFor={`projects.${index}.title`}>
+                              Title<span className="text-destructive">*</span>
+                            </FieldLabel>
+                            <Input
+                              id={`projects.${index}.title`}
+                              type="text"
+                              {...register(`projects.${index}.title`)}
+                            />
+                            {errors?.projects?.[index]?.title?.message && (
+                              <FieldError>
+                                {errors.projects[index].title.message}
+                              </FieldError>
+                            )}
+                          </Field>
+
+                          <Field>
+                            <FieldLabel
+                              htmlFor={`projects.${index}.description`}
+                            >
+                              Description
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
+                            <Textarea
+                              id={`projects.${index}.description`}
+                              rows={5}
+                              placeholder="Describe the project goal, scope, and why it matters."
+                              {...register(`projects.${index}.description`)}
+                            />
+                            {errors?.projects?.[index]?.description
+                              ?.message && (
+                              <FieldError>
+                                {errors.projects[index].description.message}
+                              </FieldError>
+                            )}
+                          </Field>
+
+                          <Field>
+                            <FieldLabel htmlFor={`projects.${index}.link`}>
+                              Link
+                            </FieldLabel>
+                            <Input
+                              id={`projects.${index}.link`}
+                              type="url"
+                              placeholder="Example: https://github.com/username/project"
+                              {...register(`projects.${index}.link`)}
+                            />
+                            {errors?.projects?.[index]?.link?.message && (
+                              <FieldError>
+                                {errors.projects[index].link.message}
+                              </FieldError>
+                            )}
+                          </Field>
+
+                          <Field>
+                            <FieldLabel htmlFor={`projects.${index}.bullets`}>
+                              Bullet points
+                            </FieldLabel>
+                            <TagsInput
+                              name={`projects.${index}.bullets`}
+                              placeholder="Example: Reduced report generation time by 60% (press Enter to add)"
+                              maxTags={10}
+                            />
+                          </Field>
+
+                          <Field>
+                            <FieldLabel htmlFor={`projects.${index}.techStack`}>
+                              Tech stack
+                            </FieldLabel>
+                            <TagsInput
+                              name={`projects.${index}.techStack`}
+                              placeholder="Example: Next.js, TypeScript, PostgreSQL (press Enter to add)"
+                              maxTags={20}
+                            />
+                          </Field>
                         </div>
                       ))}
                     </div>

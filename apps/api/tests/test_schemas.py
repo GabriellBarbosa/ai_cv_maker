@@ -1,7 +1,7 @@
 import pytest # type: ignore
 from pydantic import ValidationError
 
-from app.core.schemas import Experience, GenerateRequest
+from app.core.schemas import Experience, GenerateRequest, Project
 
 
 def _valid_experience(**overrides):
@@ -50,3 +50,14 @@ def test_generate_request_defaults_format_and_language():
     request = GenerateRequest(candidate_text="a", job_text="b")
     assert request.format == "docx"
     assert request.language == "pt-BR"
+
+
+def test_project_rejects_blank_list_items():
+    with pytest.raises(ValidationError):
+        Project(
+            title="CV Maker",
+            description="Resume generation app",
+            link="https://example.com/cv-maker",
+            bullets=["Built export flow", " "],
+            techStack=["Next.js"],
+        )

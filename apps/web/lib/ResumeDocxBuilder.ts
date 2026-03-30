@@ -17,7 +17,9 @@ const LOCALE_TEXTS = {
     experienceHeading: "Experiência",
     educationHeading: "Formação Acadêmica",
     languagesHeading: "Idiomas",
+    projectsHeading: "Projetos",
     skillsHeading: "Competências",
+    projectLinkLabel: "Link: ",
     technologiesLabel: "Tecnologias: ",
     contactEmailLabel: "E-mail",
     contactPhoneLabel: "Telefone",
@@ -28,7 +30,9 @@ const LOCALE_TEXTS = {
     experienceHeading: "Experience",
     educationHeading: "Education",
     languagesHeading: "Languages",
+    projectsHeading: "Projects",
     skillsHeading: "Skills",
+    projectLinkLabel: "Link: ",
     technologiesLabel: "Technologies: ",
     contactEmailLabel: "Email",
     contactPhoneLabel: "Phone",
@@ -65,6 +69,7 @@ export class ResumeDocxBuilder {
       this.createExternalLinksSection(),
       this.createResumeSummary(),
       this.createExperienceSection(),
+      this.createProjectsSection(),
       this.createEducationSection(),
       this.createLanguagesSection(),
       this.createSkillsSection(),
@@ -142,14 +147,14 @@ export class ResumeDocxBuilder {
       runs.push(
         new TextRun({
           text: segment,
-        })
+        }),
       );
 
       if (index < segments.length - 1) {
         runs.push(
           new TextRun({
             text: " | ",
-          })
+          }),
         );
       }
     });
@@ -201,7 +206,7 @@ export class ResumeDocxBuilder {
           spacing: {
             after: 100,
           },
-        })
+        }),
       );
     });
 
@@ -282,17 +287,21 @@ export class ResumeDocxBuilder {
             before: index === 0 ? 0 : 200,
             after: 50,
           },
-        })
+        }),
       );
 
       // Location and dates
       paragraphs.push(
         new Paragraph({
-          text: this.buildLocationAndDates(exp.location, exp.start_date, exp.end_date),
+          text: this.buildLocationAndDates(
+            exp.location,
+            exp.start_date,
+            exp.end_date,
+          ),
           spacing: {
             after: 100,
           },
-        })
+        }),
       );
 
       // Bullet points
@@ -306,7 +315,7 @@ export class ResumeDocxBuilder {
             spacing: {
               after: 50,
             },
-          })
+          }),
         );
       });
 
@@ -327,7 +336,119 @@ export class ResumeDocxBuilder {
               before: 50,
               after: 100,
             },
-          })
+          }),
+        );
+      }
+    });
+
+    return paragraphs;
+  }
+
+  /**
+   * Creates the Projects section
+   */
+  private createProjectsSection(): Paragraph[] {
+    if (!this.resume.projects || this.resume.projects.length === 0) {
+      return [];
+    }
+
+    const paragraphs: Paragraph[] = [
+      new Paragraph({
+        text: this.texts.projectsHeading,
+        heading: HeadingLevel.HEADING_2,
+        spacing: {
+          before: 200,
+          after: 100,
+        },
+        border: {
+          bottom: {
+            color: "000000",
+            space: 1,
+            style: "single",
+            size: 6,
+          } as IBorderOptions,
+        },
+      }),
+    ];
+
+    this.resume.projects.forEach((project, index) => {
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: project.title,
+              bold: true,
+            }),
+          ],
+          spacing: {
+            before: index === 0 ? 0 : 200,
+            after: 50,
+          },
+        }),
+      );
+
+      paragraphs.push(
+        new Paragraph({
+          text: project.description,
+          spacing: {
+            after:
+              project.bullets.length > 0 || project.techStack.length > 0
+                ? 100
+                : 150,
+          },
+        }),
+      );
+
+      project.bullets.forEach((bullet) => {
+        paragraphs.push(
+          new Paragraph({
+            text: bullet,
+            bullet: {
+              level: 0,
+            },
+            spacing: {
+              after: 50,
+            },
+          }),
+        );
+      });
+
+      if (project.techStack.length > 0) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: this.texts.technologiesLabel,
+                italics: true,
+              }),
+              new TextRun({
+                text: project.techStack.join(", "),
+              }),
+            ],
+            spacing: {
+              before: 50,
+              after: 100,
+            },
+          }),
+        );
+      }
+
+      if (project.link) {
+        paragraphs.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: this.texts.projectLinkLabel,
+                italics: true,
+              }),
+              new TextRun({
+                text: project.link,
+              }),
+            ],
+            spacing: {
+              after: 100,
+            },
+          }),
         );
       }
     });
@@ -382,7 +503,7 @@ export class ResumeDocxBuilder {
             before: index === 0 ? 0 : 100,
             after: 50,
           },
-        })
+        }),
       );
 
       paragraphs.push(
@@ -391,7 +512,7 @@ export class ResumeDocxBuilder {
           spacing: {
             after: 100,
           },
-        })
+        }),
       );
     });
 
@@ -435,7 +556,7 @@ export class ResumeDocxBuilder {
           spacing: {
             after: 50,
           },
-        })
+        }),
       );
     });
 
@@ -452,6 +573,9 @@ export class ResumeDocxBuilder {
       if (exp.skills) {
         exp.skills.forEach((skill) => allSkills.add(skill));
       }
+    });
+    this.resume.projects?.forEach((project) => {
+      project.techStack?.forEach((tech) => allSkills.add(tech));
     });
 
     if (allSkills.size === 0) {
@@ -496,7 +620,10 @@ export class ResumeDocxBuilder {
       return "";
     }
 
-    if (normalized.toLowerCase() === "atual" || normalized.toLowerCase() === "present") {
+    if (
+      normalized.toLowerCase() === "atual" ||
+      normalized.toLowerCase() === "present"
+    ) {
       return this.texts.presentLabel;
     }
 
@@ -514,7 +641,9 @@ export class ResumeDocxBuilder {
       return `${String(numericMonth).padStart(2, "0")}/${year}`;
     }
 
-    return EN_DATE_FORMATTER.format(new Date(Number(year), numericMonth - 1, 1));
+    return EN_DATE_FORMATTER.format(
+      new Date(Number(year), numericMonth - 1, 1),
+    );
   }
 
   private formatDateRange(start: string, end: string): string {
@@ -528,7 +657,11 @@ export class ResumeDocxBuilder {
     return formattedStart || formattedEnd || "";
   }
 
-  private buildLocationAndDates(location: string | null | undefined, start: string, end: string): string {
+  private buildLocationAndDates(
+    location: string | null | undefined,
+    start: string,
+    end: string,
+  ): string {
     const parts: string[] = [];
     if (location) {
       parts.push(location);

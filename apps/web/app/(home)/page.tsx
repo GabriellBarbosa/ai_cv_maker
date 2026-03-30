@@ -134,8 +134,8 @@ export default function Home() {
       </main>
 
       <footer className="mx-auto mt-12 max-w-6xl pb-8">
-        <div className="flex flex-col items-center justify-between gap-2 rounded-2xl border border-border/70  px-4 py-4 text-center text-sm text-muted-foreground backdrop-blur-sm sm:flex-row sm:text-left">
-          <p className="italic">
+        <div className="italic flex flex-col items-center justify-between gap-2 rounded-2xl border border-border/70  px-4 py-4 text-center text-sm text-muted-foreground backdrop-blur-sm sm:flex-row sm:text-left">
+          <p>
             Created by{" "}
             <span className="font-medium text-foreground">Gabriel Barbosa</span>
             .

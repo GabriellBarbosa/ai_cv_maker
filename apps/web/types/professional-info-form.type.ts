@@ -3,6 +3,15 @@ import { z } from "zod";
 const requiredText = (label: string) =>
   z.string().trim().min(1, `${label} is required`);
 
+const optionalUrl = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => (v === "" ? undefined : v))
+  .refine((v) => v === undefined || z.string().url().safeParse(v).success, {
+    message: "Invalid URL",
+  });
+
 const beginDate = z
   .string()
   .trim()
@@ -86,6 +95,18 @@ export const CandidateSchema = z.object({
       z.object({
         name: requiredText("Language"),
         level: requiredText("Level"),
+      }),
+    )
+    .optional(),
+
+  projects: z
+    .array(
+      z.object({
+        title: requiredText("Project title"),
+        description: requiredText("Project description"),
+        link: optionalUrl,
+        bullets: z.array(z.string().trim().min(1, "Bullet is required")),
+        techStack: z.array(z.string().trim().min(1, "Technology is required")),
       }),
     )
     .optional(),

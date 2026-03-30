@@ -47,6 +47,17 @@ export const EducationSchema = z.object({
 
 export type Education = z.infer<typeof EducationSchema>;
 
+// Project Schema
+export const ProjectSchema = z.object({
+  title: z.string().min(1, "Project title is required"),
+  description: z.string().min(1, "Project description is required"),
+  link: z.string().url("Project link must be a valid URL").optional(),
+  bullets: z.array(z.string().min(1)).default([]),
+  techStack: z.array(z.string().min(1)).default([]),
+});
+
+export type Project = z.infer<typeof ProjectSchema>;
+
 // Language Schema
 export const LanguageSchema = z.object({
   name: z.string().min(1, "Language name is required"),
@@ -88,6 +99,7 @@ export const ResumeResponseSchema = z.object({
     .min(1, "At least one experience is required"),
   education: z.array(EducationSchema).default([]),
   languages: z.array(LanguageSchema).default([]),
+  projects: z.array(ProjectSchema).default([]),
   contact_information: ContactInformationSchema.optional(),
   external_links: z.array(ExternalLinkSchema).default([]),
 });

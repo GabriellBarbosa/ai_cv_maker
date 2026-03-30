@@ -62,6 +62,30 @@ class Education(BaseModel):
         return v
 
 
+class Project(BaseModel):
+    title: str = Field(..., min_length=1, description="Project title is required")
+    description: str = Field(..., min_length=1, description="Project description is required")
+    link: Optional[str] = Field(default=None, description="Project URL")
+    bullets: List[str] = Field(default_factory=list, description="Project achievements or highlights")
+    techStack: List[str] = Field(default_factory=list, description="Technologies used in the project")
+
+    @field_validator('link')
+    @classmethod
+    def normalize_link(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        v = v.strip()
+        return v or None
+
+    @field_validator('bullets', 'techStack')
+    @classmethod
+    def validate_non_empty_items(cls, v: List[str]) -> List[str]:
+        for item in v:
+            if not item or len(item.strip()) == 0:
+                raise ValueError('List items must not be empty')
+        return v
+
+
 # Language Schema
 class Language(BaseModel):
     name: str = Field(..., min_length=1, description="Language name is required")
@@ -91,6 +115,7 @@ class ResumeResponse(BaseModel):
     experiences: List[Experience] = Field(..., min_length=1, description="At least one experience is required")
     education: List[Education] = Field(default_factory=list)
     languages: List[Language] = Field(default_factory=list)
+    projects: List[Project] = Field(default_factory=list)
     contact_information: Optional[ContactInformation] = Field(
         default=None, description="Candidate contact information"
     )

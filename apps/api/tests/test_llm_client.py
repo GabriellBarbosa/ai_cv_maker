@@ -139,6 +139,15 @@ def test_generate_resume_json_parses_llm_response(monkeypatch):
             }
         ],
         "languages": [{"name": "English", "level": "C2"}],
+        "projects": [
+            {
+                "title": "Developer Portal",
+                "description": "Internal platform for engineering workflows.",
+                "link": "https://example.com/developer-portal",
+                "bullets": ["Cut onboarding time by 40%."],
+                "techStack": ["Next.js", "TypeScript"],
+            }
+        ],
         "external_links": [{"label": "LinkedIn", "url": "https://example.com"}],
     }
 
@@ -154,6 +163,8 @@ def test_generate_resume_json_parses_llm_response(monkeypatch):
     assert resume.name == "Alice Smith"
     assert resume.job_title == "Senior Engineer"
     assert resume.experiences[0].company == "Acme"
+    assert resume.projects[0].title == "Developer Portal"
+    assert resume.projects[0].link == "https://example.com/developer-portal"
 
     system_prompt = cleandoc(capture["kwargs"]["messages"][0]["content"])
     assert system_prompt == read_snapshot("generate_resume_system_prompt.txt")
