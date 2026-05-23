@@ -10,6 +10,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.errors import RateLimitExceeded
+from mangum import Mangum
 
 # Configure structured logging
 logging.basicConfig(
@@ -48,3 +49,5 @@ app.add_middleware(
 # Include routers
 app.include_router(health_router, prefix="/api", tags=["health"])
 app.include_router(generate_router, prefix="/v1", tags=["generate"])
+
+handler = Mangum(app, lifespan="off")
