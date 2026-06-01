@@ -50,4 +50,4 @@ app.add_middleware(
 app.include_router(health_router, prefix="/api", tags=["health"])
 app.include_router(generate_router, prefix="/v1", tags=["generate"])
 
-handler = Mangum(app, lifespan="off")
+handler = Mangum(app)
