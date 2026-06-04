@@ -32,9 +32,6 @@ dmypy.json
 .ruff_cache/
 .pytype/
 
-# Poetry
-poetry.lock
-
 # Testing
 coverage/
 *.cover
