@@ -33,5 +33,5 @@ jobs:
           docker build \
             -f apps/api/Dockerfile \
             -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
-            .
+            apps/api
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
