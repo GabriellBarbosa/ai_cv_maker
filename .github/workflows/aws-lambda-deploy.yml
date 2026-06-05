@@ -25,6 +25,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push docker image to Amazon ECR
+        id: build-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ai-cv-maker
@@ -35,3 +36,9 @@ jobs:
             -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
             apps/api
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+
+      - name: Update docker image in AWS Lambda
+        run: aws lambda update-function-code \
+          --function-name ai-cv-maker \
+          --image-uri ${{ steps.build-image.outputs.image }}
