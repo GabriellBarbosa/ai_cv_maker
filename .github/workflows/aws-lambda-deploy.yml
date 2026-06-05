@@ -39,6 +39,7 @@ jobs:
           echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG"
 
       - name: Update docker image in AWS Lambda
-        run: aws lambda update-function-code \
-          --function-name ai-cv-maker \
+        run: >
+          aws lambda update-function-code
+          --function-name ai-cv-maker
           --image-uri ${{ steps.build-image.outputs.image }}
